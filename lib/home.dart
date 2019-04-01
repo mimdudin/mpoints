@@ -2,19 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import './models/drawer_item.dart';
 import './fragments/statements_fragment.dart';
 import './fragments/tos_fragment.dart';
 import './fragments/home_fragment.dart';
 import './services/main_model.dart';
-
-import './pages/claim_points_page.dart';
+import './pages/profiles/profile_page.dart';
+import './pages/claims/claim_points_page.dart';
+import './authentications/auth.dart';
 
 class Home extends StatefulWidget {
   final MainModel model;
+  final BaseAuth auth;
+  final VoidCallback onSignedOut;
 
-  Home(this.model);
+  Home({this.auth, this.onSignedOut, this.model});
 
   final drawerItems = [
     new DrawerItem(title: "Home", icon: FontAwesomeIcons.home),
@@ -48,7 +52,7 @@ class _HomeState extends State<Home> {
     Navigator.of(context).pop(); // close the drawer
   }
 
-   @override
+  @override
   void initState() {
     super.initState();
 
@@ -59,6 +63,7 @@ class _HomeState extends State<Home> {
     await Future.wait([
       widget.model.fetchRewardList(),
       widget.model.fetchPartnerList(),
+      PermissionHandler().requestPermissions([PermissionGroup.camera])
     ]);
   }
 
@@ -93,7 +98,10 @@ class _HomeState extends State<Home> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ClaimPointsPage())),
+        onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) => ClaimPointsPage())),
         tooltip: "Claims",
         child: Icon(Icons.add, size: 40),
         backgroundColor: Color(0xffAD8D0B),
@@ -114,7 +122,7 @@ class _HomeState extends State<Home> {
                 fontSize: 18, letterSpacing: 1, fontWeight: FontWeight.w400)),
         onTap: () {
           Navigator.of(context).pop();
-          // _signOut();
+          _signOut();
           // Scaffold.of(context).showSnackBar(new SnackBar(
           //   content: new Text("Sign Out..."),
           // ));
@@ -122,76 +130,89 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildProfileBanner() {
-    return Container(
-        height: 210,
-        color: Color(0xffAD8D0B),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
-              child: Container(
-                padding: EdgeInsets.only(right: 5, top: 5),
-                alignment: Alignment.centerRight,
-                child: Icon(
-                  Icons.keyboard_arrow_left,
-                  color: Colors.white,
-                  size: 28,
+    return GestureDetector(
+      onTap: () => Navigator.push(context,
+          MaterialPageRoute(builder: (BuildContext context) => ProfilePage())),
+      child: Container(
+          height: 210,
+          color: Color(0xffAD8D0B),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: Container(
+                  padding: EdgeInsets.only(right: 5, top: 5),
+                  alignment: Alignment.centerRight,
+                  child: Icon(
+                    Icons.keyboard_arrow_left,
+                    color: Colors.white,
+                    size: 28,
+                  ),
                 ),
               ),
-            ),
-            Container(
-              width: 100,
-              height: 100.0,
-              child: CircleAvatar(
-                child: ClipOval(
-                    child: CachedNetworkImage(
-                  width: 200.0,
-                  height: 200.0,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Center(
-                        child: SpinKitFadingCube(
-                          color: Colors.white54,
-                          size: 10,
+              Container(
+                width: 100,
+                height: 100.0,
+                child: CircleAvatar(
+                  child: ClipOval(
+                      child: CachedNetworkImage(
+                    width: 200.0,
+                    height: 200.0,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Center(
+                          child: SpinKitFadingCube(
+                            color: Colors.white54,
+                            size: 10,
+                          ),
                         ),
-                      ),
-                  imageUrl: "http://via.placeholder.com/200x150",
-                  errorWidget: (context, url, error) => new Icon(Icons.error),
-                  fadeOutDuration: new Duration(seconds: 1),
-                  fadeInDuration: new Duration(seconds: 3),
-                  fadeInCurve: Curves.fastOutSlowIn,
-                )),
+                    imageUrl: "http://via.placeholder.com/200x150",
+                    errorWidget: (context, url, error) => new Icon(Icons.error),
+                    fadeOutDuration: new Duration(seconds: 1),
+                    fadeInDuration: new Duration(seconds: 3),
+                    fadeInCurve: Curves.fastOutSlowIn,
+                  )),
+                ),
               ),
-            ),
-            SizedBox(height: 15),
-            Text(
-              "Gino Furcy",
-              style: Theme.of(context)
-                  .textTheme
-                  .subhead
-                  .copyWith(fontSize: 16, color: Colors.white),
-            ),
-            SizedBox(height: 3),
-            Text(
-              "ginofurcy@gmail.com",
-              style: Theme.of(context)
-                  .textTheme
-                  .subhead
-                  .copyWith(fontSize: 13, color: Colors.white),
-            ),
-            // GestureDetector(
-            //   onTap: () => Navigator.of(context).pop(),
-            //   child: Container(
-            //     padding: EdgeInsets.only(right: 5, bottom: 5),
-            //     alignment: Alignment.centerRight,
-            //     child: Icon(
-            //       Icons.home,
-            //       color: Colors.white,
-            //       size: 20,
-            //     ),
-            //   ),
-            // ),
-          ],
-        ));
+              SizedBox(height: 15),
+              Text(
+                "Gino Furcy",
+                style: Theme.of(context)
+                    .textTheme
+                    .subhead
+                    .copyWith(fontSize: 16, color: Colors.white),
+              ),
+              SizedBox(height: 3),
+              Text(
+                "ginofurcy@gmail.com",
+                style: Theme.of(context)
+                    .textTheme
+                    .subhead
+                    .copyWith(fontSize: 13, color: Colors.white),
+              ),
+              // GestureDetector(
+              //   onTap: () => Navigator.of(context).pop(),
+              //   child: Container(
+              //     padding: EdgeInsets.only(right: 5, bottom: 5),
+              //     alignment: Alignment.centerRight,
+              //     child: Icon(
+              //       Icons.home,
+              //       color: Colors.white,
+              //       size: 20,
+              //     ),
+              //   ),
+              // ),
+            ],
+          )),
+    );
+  }
+
+  void _signOut() async {
+    try {
+      await widget.auth.signOut();
+      widget.onSignedOut();
+    } catch (e) {
+      print("Error: $e");
+    }
   }
 }

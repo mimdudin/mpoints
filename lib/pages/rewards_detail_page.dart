@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import './redeem_rewards_page.dart';
+import './redeems/redeem_validation_page.dart';
 
 class RewardsDetailPage extends StatelessWidget {
   @override
@@ -41,7 +41,10 @@ class RewardsDetailPage extends StatelessWidget {
               //     ),
               //   )),
               InkWell(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => RedeemRewardsPage())),
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => RedeemValidationPage())),
             // alignment: Alignment.center,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -33,14 +33,17 @@ mixin PartnerListService on Model {
       final List<Partners> fetchedPartnerList = [];
       responseData.forEach((String partnerId, dynamic json) {
         _partner = Partners(
-            id: partnerId,
-            name: json['name'],
-            category: json['category'],
-            logo: json['logo'],
-            email: json['email'],
-            facebook: json['facebook'],
-            phoneNumber: json['phone_number'],
-            website: json['website']);
+          id: partnerId,
+          name: json['name'],
+          category: json['category'],
+          logo: json['logo'],
+          email: json['email'],
+          facebook: json['facebook'],
+          phoneNumber: json['phone_number'],
+          website: json['website'],
+          isNewest: json['isNewest'],
+          isPopular: json['isPopular'],
+        );
 
         fetchedPartnerList.add(_partner);
       });

@@ -23,7 +23,7 @@ class _RewardsListViewState extends State<RewardsListView> {
                     model.rewardList == null ? 0 : model.getRewardListCount(),
                 itemBuilder: (context, i) {
                   var reward = model.rewardList[i];
-                  return RewardsListItem(reward);
+                  return RewardsListItem(reward, i);
                 },
               );
       },

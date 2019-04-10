@@ -4,6 +4,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../pages/partners_detail_page.dart';
 import '../models/partners.dart';
+import '../utils/circular_loading.dart';
+import '../utils/pallete.dart';
 
 class PartnerListItem extends StatelessWidget {
   final Partners partner;
@@ -24,46 +26,8 @@ class PartnerListItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 5, vertical: 7),
-                    height: 120,
-                    width: 120,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                      border: Border.all(color: Color(0xffAD8D0B)),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                      child: CachedNetworkImage(
-                        imageUrl: partner.logo != null || partner.logo != ''
-                            ? partner.logo
-                            : '',
-                        placeholder: (context, url) => new SpinKitThreeBounce(
-                              color: Color(0xffAD8D0B),
-                              size: 15,
-                            ),
-                        errorWidget: (context, url, error) =>
-                            new Icon(Icons.error),
-                        fadeOutDuration: new Duration(seconds: 1),
-                        fadeInDuration: new Duration(seconds: 3),
-                        fit: BoxFit.cover,
-                        height: 120,
-                        width: 120,
-                      ),
-                    ),
-                  ),
-                  Container(
-                      alignment: Alignment.centerLeft,
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        partner.name != null || partner.name != ''
-                            ? partner.name
-                            : 'Unknown',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xffAD8D0B)),
-                      )),
+                  _buildPartnerBanner(),
+                  _buildPartnerName(),
                 ],
               ),
             ),
@@ -71,8 +35,48 @@ class PartnerListItem extends StatelessWidget {
           onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (BuildContext context) => PartnersDetailPage()),
+                    builder: (BuildContext context) =>
+                        PartnersDetailPage(partner)),
               )),
+    );
+  }
+
+  Widget _buildPartnerName() {
+    return Container(
+        alignment: Alignment.centerLeft,
+        padding: EdgeInsets.symmetric(horizontal: 10),
+        child: Text(
+          partner.name != null || partner.name != '' ? partner.name : 'Unknown',
+          style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Pallete.primary),
+        ));
+  }
+
+  Widget _buildPartnerBanner() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 5, vertical: 7),
+      height: 120,
+      width: 120,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(5)),
+        border: Border.all(color: Pallete.primary),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.all(Radius.circular(5)),
+        child: CachedNetworkImage(
+          imageUrl:
+              partner.logo != null || partner.logo != '' ? partner.logo : '',
+          placeholder: (context, url) => LoadingCircular15(),
+          errorWidget: (context, url, error) => new Icon(Icons.error),
+          fadeOutDuration: new Duration(seconds: 1),
+          fadeInDuration: new Duration(seconds: 3),
+          fit: BoxFit.cover,
+          height: 120,
+          width: 120,
+        ),
+      ),
     );
   }
 }

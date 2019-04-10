@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 
 class TermsPrivacyContent extends StatelessWidget {
+  final int showBackBtn;
+
+  TermsPrivacyContent(this.showBackBtn);
+
   @override
   Widget build(BuildContext context) {
     return Container(
       child: ListView(
         children: <Widget>[
           SizedBox(height: 5),
-          _buildBackBtn(context),
+
+          showBackBtn == 1 ? _buildBackBtn(context) : Container(),
           // SizedBox(height: 20),
           // _buildLogo(),
           SizedBox(height: 20),

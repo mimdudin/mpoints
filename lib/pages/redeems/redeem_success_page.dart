@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
 class RedeemSuccessPage extends StatefulWidget {
+  final String rewardName;
+
+  RedeemSuccessPage(this.rewardName);
+
   @override
   _RedeemSuccessPageState createState() => _RedeemSuccessPageState();
 }
@@ -19,7 +23,7 @@ class _RedeemSuccessPageState extends State<RedeemSuccessPage> {
           children: <Widget>[
             _buildSomeText("Congratulations!!!", 24),
             SizedBox(height: 10),
-            _buildSomeText("Reward redeemed successfully.", 14),
+            _buildSomeText("${widget.rewardName} redeemed successfully.", 14),
             SizedBox(height: 60),
             _buildSuccessIcon(),
             SizedBox(height: 30),
@@ -89,7 +93,7 @@ class _RedeemSuccessPageState extends State<RedeemSuccessPage> {
               .copyWith(fontSize: 16, color: Colors.white),
         ),
         color: Color(0xffAD8D0B),
-        onPressed: () {},
+        onPressed: () => Navigator.pop(context),
       ),
     );
   }

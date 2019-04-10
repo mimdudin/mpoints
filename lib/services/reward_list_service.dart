@@ -7,6 +7,8 @@ import '../models/rewards.dart';
 import '../utils/constant.dart';
 
 mixin RewardListService on Model {
+  int _selRewardIndex;
+
   List<Rewards> _rewardList = [];
   List<Rewards> get rewardList => _rewardList;
 
@@ -47,5 +49,17 @@ mixin RewardListService on Model {
       notifyListeners();
       throw Exception('failed to load data');
     }
+  }
+
+  Rewards get getSelectedReward {
+    if (_selRewardIndex == null) {
+      return null;
+    }
+    return _rewardList[_selRewardIndex];
+  }
+
+  void selectedRewad(int index) {
+    _selRewardIndex = index;
+    notifyListeners();
   }
 }

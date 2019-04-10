@@ -1,13 +1,23 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:fast_qr_reader_view/fast_qr_reader_view.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 import './redeem_summary_page.dart';
+import '../../utils/pallete.dart';
+import '../../utils/strings.dart';
+import '../../utils/circular_loading.dart';
+import '../../models/rewards.dart';
 
 void logError(String code, String message) =>
     print('Error: $code\nError Message: $message');
 
 class RedeemValidationPage extends StatefulWidget {
+  final Rewards rewards;
+  final int i;
+
+  RedeemValidationPage(this.rewards, this.i);
+
   @override
   _RedeemValidationPageState createState() => new _RedeemValidationPageState();
 }
@@ -19,12 +29,26 @@ class _RedeemValidationPageState extends State<RedeemValidationPage>
   AnimationController animationController;
   List<CameraDescription> cameras = [];
   Animation<double> verticalPosition;
+  var _partNumberController = TextEditingController();
+  bool _validate = false;
+  String _partNumber;
 
   @override
   void initState() {
     super.initState();
 
     checkAvailableCamera();
+  }
+
+  @override
+  void dispose() {
+    _partNumberController?.dispose();
+    controller?.stopScanning();
+    controller?.dispose();
+    animationController?.stop();
+    animationController?.dispose();
+
+    super.dispose();
   }
 
   Future<Null> checkAvailableCamera() async {
@@ -71,17 +95,17 @@ class _RedeemValidationPageState extends State<RedeemValidationPage>
                 SizedBox(height: 5),
                 _buildBackBtn(context),
                 SizedBox(height: 20),
-                _buildQRandOrLabel("QR Scanner"),
+                _buildQRandOrLabel(Strings.qrScanner),
                 SizedBox(height: 40),
                 _buildQRScanner(),
                 SizedBox(height: 25),
-                _buildQRandOrLabel("Or"),
+                _buildQRandOrLabel(Strings.or),
                 SizedBox(height: 25),
                 Column(
                   children: <Widget>[
                     _buildPartnerNumField(),
                     SizedBox(height: 30),
-                    _buildNextBtn()
+                    _buildNextBtn(context)
                   ],
                 ),
                 SizedBox(height: 25),
@@ -132,12 +156,12 @@ class _RedeemValidationPageState extends State<RedeemValidationPage>
         style: Theme.of(context)
             .textTheme
             .title
-            .copyWith(fontSize: 15, color: Color(0xffAD8D0B)),
+            .copyWith(fontSize: 15, color: Pallete.primary),
       ),
     );
   }
 
-  Widget _buildNextBtn() {
+  Widget _buildNextBtn(BuildContext context) {
     return Container(
       alignment: Alignment.centerRight,
       height: 40,
@@ -148,21 +172,57 @@ class _RedeemValidationPageState extends State<RedeemValidationPage>
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(100))),
         child: Text(
-          "Next",
+          Strings.next,
           style: Theme.of(context)
               .textTheme
               .button
               .copyWith(fontSize: 16, color: Colors.white),
         ),
-        color: Color(0xffAD8D0B),
+        color: Pallete.primary,
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) => RedeemSummaryPage()));
+          setState(() {
+            if (_partNumberController.text == widget.rewards.partnerNumber) {
+              _validate = false;
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          RedeemSummaryPage(widget.rewards, widget.i)));
+              _partNumberController.clear();
+            } else if (_partNumberController.text.isEmpty) {
+              _validate = true;
+            } else if (_partNumberController.text !=
+                widget.rewards.partnerNumber) {
+              _validate = false;
+
+              _buildAlert(context);
+              _partNumberController.clear();
+            }
+          });
         },
       ),
     );
+  }
+
+  // Alert with single button.
+  _buildAlert(context) {
+    Alert(
+      context: context,
+      type: AlertType.warning,
+      title: Strings.invalidPartNumber,
+      // desc: Strings.notEnoughMPDesc,
+      buttons: [
+        DialogButton(
+          color: Pallete.primary,
+          child: Text(
+            "OKAY",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () => Navigator.pop(context),
+          width: 120,
+        )
+      ],
+    ).show();
   }
 
   Widget _buildPartnerNumField() {
@@ -171,14 +231,22 @@ class _RedeemValidationPageState extends State<RedeemValidationPage>
       alignment: Alignment.center,
       child: TextField(
         textAlign: TextAlign.center,
-        // controller: _purchaseController,
+        controller: _partNumberController,
         decoration: InputDecoration(
-            hintText: "Enter Partner Number",
-            contentPadding: EdgeInsets.symmetric(vertical: 3)),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Pallete.primary),
+            ),
+            hintText: Strings.enterPartNumber,
+            contentPadding: EdgeInsets.symmetric(vertical: 3),
+            errorText: _validate ? "Partner Number can't be Empty." : null,
+            errorStyle: TextStyle(fontSize: 14, color: Colors.redAccent[200])),
         maxLines: 1,
         keyboardType: TextInputType.number,
-        onChanged: (String v) {
-          print(v);
+        onChanged: (v) {
+          setState(() {
+            _partNumber = v;
+            print(v);
+          });
         },
       ),
     );
@@ -191,7 +259,7 @@ class _RedeemValidationPageState extends State<RedeemValidationPage>
           icon: Icon(
             Icons.arrow_back,
             size: 28,
-            color: Color(0xffAD8D0B),
+            color: Pallete.primary,
           ),
           onPressed: () => Navigator.pop(context),
         ));
@@ -200,8 +268,8 @@ class _RedeemValidationPageState extends State<RedeemValidationPage>
   /// Display the preview from the camera (or a message if the preview is not available).
   Widget _cameraPreviewWidget() {
     if (controller == null || !controller.value.isInitialized) {
-      return const Text(
-        'No camera selected',
+      return Text(
+        Strings.noCamSelected,
         style: const TextStyle(
           color: Colors.white,
           fontSize: 24.0,
@@ -232,7 +300,7 @@ class _RedeemValidationPageState extends State<RedeemValidationPage>
 
     // If the controller is updated then update the UI.
     controller.addListener(() {
-      if (mounted) setState(() {});
+      // if (mounted) setState(() {});
       if (controller.value.hasError) {
         showInSnackBar('Camera error ${controller.value.errorDescription}');
       }

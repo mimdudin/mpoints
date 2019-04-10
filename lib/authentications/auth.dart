@@ -23,7 +23,7 @@ abstract class BaseAuth {
       String firstName,
       String lastName,
       String phoneNumber,
-      String referralCode);
+      String referralBy);
   Future<FirebaseUser> signInWithEmailAndPassword(
       String email, String password);
 }
@@ -45,7 +45,9 @@ class Auth implements BaseAuth {
   Future<void> signOut() async {
     // TODO: implement signOut
     await Future.wait([
-      firebaseAuth.signOut(), fbSignIn.logOut(), googleSignIn.signOut(),
+      firebaseAuth.signOut(),
+      fbSignIn.logOut(),
+      googleSignIn.signOut(),
     ]);
   }
 
@@ -83,8 +85,14 @@ class Auth implements BaseAuth {
     assert(user.uid == currentUser.uid);
     // setState(() {
     if (user != null) {
-      setUidDatabse(user.uid, user.displayName, "", user.photoUrl, user.email,
-          user.phoneNumber, "");
+      setUidDatabse(
+        uid: user.uid,
+        firstName: user.displayName,
+        lastName: "",
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        photo: user.photoUrl,
+      );
     } else {
       print("Failed to sign in with Google.");
     }
@@ -103,12 +111,19 @@ class Auth implements BaseAuth {
       String firstName,
       String lastName,
       String phoneNumber,
-      String referralCode) async {
+      String referralBy) async {
     FirebaseUser user = await firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
 
     setUidDatabse(
-        user.uid, firstName, lastName, "", email, phoneNumber, referralCode);
+        uid: user.uid,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phoneNumber: phoneNumber,
+        photo: "",
+        referredBy: referralBy,
+        myReferral: "");
     return user;
   }
 
@@ -144,8 +159,13 @@ class Auth implements BaseAuth {
     // setState(() {
     if (user != null) {
       print('Successfully signed in with Facebook. ' + user.uid);
-      setUidDatabse(user.uid, user.displayName, "", user.photoUrl, user.email,
-          user.phoneNumber, "");
+      setUidDatabse(
+          uid: user.uid,
+          firstName: user.displayName,
+          lastName: "",
+          email: user.email,
+          photo: user.photoUrl,
+          phoneNumber: user.phoneNumber);
     } else {
       print('Failed to sign in with Facebook. ');
     }
@@ -154,22 +174,28 @@ class Auth implements BaseAuth {
   }
 
   void setUidDatabse(
-      String uid,
+      {String uid,
       String firstName,
       String lastName,
-      String photoUrl,
       String email,
       String phoneNumber,
-      String referralCode) async {
+      String photo,
+      String referredBy,
+      String myReferral}) async {
     final Map<String, dynamic> _userData = {
       'uid': uid,
       'firstName': firstName,
       'lastName': lastName,
-      'profilePhoto': photoUrl,
       'email': email,
       'phoneNumber':
           phoneNumber == "" || phoneNumber == null ? "" : phoneNumber,
-      'referralCode': referralCode,
+      'photo': photo,
+      'referredBy': referredBy == "" || referredBy == null ? "" : referredBy,
+      'referrals': myReferral == "" || myReferral == null ? "" : myReferral,
+      'mpoints': 0,
+      'mpointsUsed': 0,
+      'mpointsReceived': 0,
+      'statements': "",
     };
 
     _userRef = FirebaseDatabase.instance.reference().child("users");

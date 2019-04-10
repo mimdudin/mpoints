@@ -38,7 +38,7 @@ class RewardsLibraryPage extends StatelessWidget {
                           crossAxisCount: 2),
                       itemBuilder: (context, i) {
                         var reward = model.rewardList[i];
-                        return RewardsListItem(reward);
+                        return RewardsListItem(reward, i);
                       }),
             ));
       },

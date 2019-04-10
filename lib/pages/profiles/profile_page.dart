@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:scoped_model/scoped_model.dart';
 
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import '../../utils/circular_loading.dart';
+import '../../utils/strings.dart';
+import '../../utils/pallete.dart';
+import '../../services/main_model.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -11,90 +15,99 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-          child: ListView(
-        children: <Widget>[
-          Container(
-            height: 210,
-            color: Color(0xffAD8D0B),
-            child: Column(
-              children: <Widget>[
-                GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: Container(
-                    padding: EdgeInsets.only(right: 5, top: 5),
-                    alignment: Alignment.centerRight,
-                    child: Icon(
-                      Icons.keyboard_arrow_left,
-                      color: Colors.white,
-                      size: 28,
-                    ),
-                  ),
-                ),
-                Column(
+    return ScopedModelDescendant<MainModel>(
+      builder: (context, child, model) {
+        return Scaffold(
+          body: Container(
+              child: ListView(
+            children: <Widget>[
+              Container(
+                height: 210,
+                color: Pallete.primary,
+                child: Column(
                   children: <Widget>[
-                    Container(
-                      width: 100,
-                      height: 100.0,
-                      child: CircleAvatar(
-                        child: ClipOval(
-                            child: CachedNetworkImage(
-                          width: 200.0,
-                          height: 200.0,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Center(
-                                child: SpinKitFadingCube(
-                                  color: Colors.white54,
-                                  size: 10,
-                                ),
-                              ),
-                          imageUrl: "http://via.placeholder.com/200x150",
-                          errorWidget: (context, url, error) =>
-                              new Icon(Icons.error),
-                          fadeOutDuration: new Duration(seconds: 1),
-                          fadeInDuration: new Duration(seconds: 3),
-                          fadeInCurve: Curves.fastOutSlowIn,
-                        )),
+                    GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Container(
+                        padding: EdgeInsets.only(right: 5, top: 5),
+                        alignment: Alignment.centerRight,
+                        child: Icon(
+                          Icons.keyboard_arrow_left,
+                          color: Colors.white,
+                          size: 28,
+                        ),
                       ),
                     ),
-                    SizedBox(height: 15),
-                    Text(
-                      "Gino Furcy",
-                      style: Theme.of(context)
-                          .textTheme
-                          .subhead
-                          .copyWith(fontSize: 16, color: Colors.white),
-                    ),
-                    SizedBox(height: 3),
-                    Text(
-                      "ginofurcy@gmail.com",
-                      style: Theme.of(context)
-                          .textTheme
-                          .subhead
-                          .copyWith(fontSize: 13, color: Colors.white),
+                    Column(
+                      children: <Widget>[
+                        Container(
+                          width: 100,
+                          height: 100.0,
+                          child: CircleAvatar(
+                            child: ClipOval(
+                                child: CachedNetworkImage(
+                              width: 200.0,
+                              height: 200.0,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Center(
+                                    child: LoadingCircular10(),
+                                  ),
+                              imageUrl: model.user?.photo ?? "",
+                              errorWidget: (context, url, error) =>
+                                  new Icon(Icons.error),
+                              fadeOutDuration: new Duration(seconds: 1),
+                              fadeInDuration: new Duration(seconds: 3),
+                              fadeInCurve: Curves.fastOutSlowIn,
+                            )),
+                          ),
+                        ),
+                        SizedBox(height: 15),
+                        Text(
+                          model.isLoadingUser
+                              ? 'Loading...'
+                              : model.user == null || model.user.firstName == ""
+                                  ? "Unknown"
+                                  : "${model.user.firstName} ${model.user.lastName}",
+                          style: Theme.of(context)
+                              .textTheme
+                              .subhead
+                              .copyWith(fontSize: 16, color: Colors.white),
+                        ),
+                        SizedBox(height: 3),
+                        Text(
+                          model.isLoadingUser
+                              ? 'Loading...'
+                              : model.user == null || model.user.email == ""
+                                  ? "anonymous@gmail.com"
+                                  : "${model.user.email}",
+                          style: Theme.of(context)
+                              .textTheme
+                              .subhead
+                              .copyWith(fontSize: 13, color: Colors.white),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-          _buildProfileLabel("My ID"),
-          SizedBox(height: 10),
-          _buildQRCode(),
-          SizedBox(height: 10),
-          _buildProfileLabel("Phone Number"),
-          _buildPhoneNumber(),
-          SizedBox(height: 10),
-          _buildProfileLabel("Referrals"),
-          _buildReferrals(),
-          SizedBox(height: 25),
-        ],
-      )),
+              ),
+              _buildProfileLabel(Strings.myId),
+              SizedBox(height: 10),
+              _buildQRCode(),
+              SizedBox(height: 10),
+              _buildProfileLabel(Strings.phoneNumber),
+              _buildPhoneNumber(model),
+              SizedBox(height: 10),
+              _buildProfileLabel(Strings.referrals),
+              _buildReferrals(model),
+              SizedBox(height: 25),
+            ],
+          )),
+        );
+      },
     );
   }
 
-  Widget _buildPhoneNumber() {
+  Widget _buildPhoneNumber(MainModel model) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 40),
       height: 40,
@@ -108,7 +121,11 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Container(
           padding: EdgeInsets.only(top: 5),
           child: Text(
-            "+1 993943949",
+            model.isLoadingUser
+                ? 'Loading...'
+                : model.user == null || model.user.phoneNumber == ""
+                    ? "+1 23456789"
+                    : "${model.user.phoneNumber}",
             textAlign: TextAlign.center,
             style: Theme.of(context)
                 .textTheme
@@ -120,7 +137,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildReferrals() {
+  Widget _buildReferrals(MainModel model) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 40),
       height: 40,
@@ -134,7 +151,11 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Container(
           padding: EdgeInsets.only(top: 5),
           child: Text(
-            "ABKADJADJWMCMMC",
+            model.isLoadingUser
+                ? 'Loading...'
+                : model.user == null || model.user.myReferral == ""
+                    ? "ABCDEFGHIJKLMNO"
+                    : "${model.user.myReferral}",
             textAlign: TextAlign.center,
             style: Theme.of(context)
                 .textTheme
@@ -176,7 +197,7 @@ class _ProfilePageState extends State<ProfilePage> {
               style: Theme.of(context)
                   .textTheme
                   .title
-                  .copyWith(fontSize: 16, color: Color(0xffAD8D0B)),
+                  .copyWith(fontSize: 16, color: Pallete.primary),
             ),
             SizedBox(height: 5),
             Container(

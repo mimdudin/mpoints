@@ -12,23 +12,23 @@ import '../utils/rewards_loading.dart';
 import '../utils/partners_loading.dart';
 import '../pages/partners_library_page.dart';
 import '../pages/rewards_library_page.dart';
+import '../utils/circular_loading.dart';
+import '../utils/strings.dart';
+import '../utils/pallete.dart';
+import '../home_screens/ads.dart';
 
 class HomeFragment extends StatefulWidget {
-  final MainModel model;
-
-  HomeFragment(this.model);
-
   @override
   _HomeFragmentState createState() => _HomeFragmentState();
 }
 
 class _HomeFragmentState extends State<HomeFragment> {
-  @override
-  void initState() {
-    super.initState();
+  // @override
+  // void initState() {
+  //   super.initState();
 
-    // loadData();
-  }
+  //   // loadData();
+  // }
 
   // Future loadData() async {
   //   await Future.wait([
@@ -44,23 +44,34 @@ class _HomeFragmentState extends State<HomeFragment> {
         return Container(
           // color: Colors.red,
           child: ListView(
+            physics: !model.isLoadingAds &&
+                    !model.isLoadingNews &&
+                    !model.isLoadingPartnerList &&
+                    !model.isLoadingrewardList &&
+                    !model.isLoadingUser
+                ? ClampingScrollPhysics()
+                : NeverScrollableScrollPhysics(),
             children: <Widget>[
               Stack(
                 alignment: Alignment.topCenter,
                 children: <Widget>[
                   Container(
                     height: 150,
-                    color: Color(0xffAD8D0B),
+                    color: Pallete.primary,
                   ),
-                  _buildImageProfile(),
-                  _buildCharityDatePoints(),
-                  _buildMPoints(),
+                  _buildImageProfile(model),
+                  _buildCharityDatePoints(model),
+                  _buildMPoints(model),
                 ],
               ),
               SizedBox(height: 15),
               _buildNewsLabel(),
               SizedBox(height: 10),
-              NewsSlider(),
+              Container(
+                height: 170,
+                margin: EdgeInsets.symmetric(horizontal: 10),
+                child: model.isLoadingNews ? LoadingCircular25() : NewsSlider(),
+              ),
               SizedBox(height: 15),
               _buildRewardsLabel(),
               SizedBox(height: 7),
@@ -80,7 +91,11 @@ class _HomeFragmentState extends State<HomeFragment> {
               SizedBox(height: 15),
               _buildAdsLabel(),
               SizedBox(height: 10),
-              _buildAds(),
+              // Container(
+              //     margin: EdgeInsets.symmetric(horizontal: 10),
+              //     height: 60,
+              //     child: model.isLoadingAds ? LoadingCircular25() : Ads()),
+              Ads(),
               SizedBox(height: 15),
             ],
           ),
@@ -89,7 +104,7 @@ class _HomeFragmentState extends State<HomeFragment> {
     );
   }
 
-  Widget _buildCharityDatePoints() {
+  Widget _buildCharityDatePoints(MainModel model) {
     return Container(
       margin: EdgeInsets.only(top: 140),
       height: 40,
@@ -103,7 +118,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                 children: <Widget>[
                   Icon(
                     FontAwesomeIcons.handHoldingHeart,
-                    color: Color(0xffAD8D0B),
+                    color: Pallete.primary,
                   ),
                   SizedBox(width: 10),
                   Text(
@@ -111,7 +126,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                     style: Theme.of(context)
                         .textTheme
                         .subhead
-                        .copyWith(fontSize: 16, color: Color(0xffAD8D0B)),
+                        .copyWith(fontSize: 16, color: Pallete.primary),
                   )
                 ],
               )),
@@ -121,7 +136,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                 children: <Widget>[
                   Icon(
                     FontAwesomeIcons.calendar,
-                    color: Color(0xffAD8D0B),
+                    color: Pallete.primary,
                   ),
                   SizedBox(width: 10),
                   Text(
@@ -129,7 +144,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                     style: Theme.of(context)
                         .textTheme
                         .subhead
-                        .copyWith(fontSize: 16, color: Color(0xffAD8D0B)),
+                        .copyWith(fontSize: 16, color: Pallete.primary),
                   )
                 ],
               )),
@@ -138,7 +153,7 @@ class _HomeFragmentState extends State<HomeFragment> {
     );
   }
 
-  Widget _buildMPoints() {
+  Widget _buildMPoints(MainModel model) {
     return Container(
       margin: EdgeInsets.only(top: 105),
       height: 60,
@@ -163,25 +178,27 @@ class _HomeFragmentState extends State<HomeFragment> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Text(
-            "MP Available",
+            Strings.mpAvailable,
             style: Theme.of(context)
                 .textTheme
                 .subhead
-                .copyWith(fontSize: 14, color: Color(0xffAD8D0B)),
+                .copyWith(fontSize: 14, color: Pallete.primary),
           ),
           Text(
-            "999,99",
+            model.isLoadingUser
+                ? '...'
+                : model.user == null ? "0" : "${model.user.mpoints}",
             style: Theme.of(context)
                 .textTheme
                 .title
-                .copyWith(fontSize: 20, color: Color(0xffAD8D0B)),
+                .copyWith(fontSize: 20, color: Pallete.primary),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildImageProfile() {
+  Widget _buildImageProfile(MainModel model) {
     return Container(
       width: 80,
       height: 80,
@@ -192,12 +209,9 @@ class _HomeFragmentState extends State<HomeFragment> {
           height: 200.0,
           fit: BoxFit.cover,
           placeholder: (context, url) => Center(
-                child: SpinKitFadingCube(
-                  color: Colors.white54,
-                  size: 10,
-                ),
+                child: LoadingCircular10(),
               ),
-          imageUrl: "http://via.placeholder.com/200x150",
+          imageUrl: model.user?.photo ?? "http://via.placeholder.com/200x150",
           errorWidget: (context, url, error) => new Icon(Icons.error),
           fadeOutDuration: new Duration(seconds: 1),
           fadeInDuration: new Duration(seconds: 3),
@@ -214,19 +228,20 @@ class _HomeFragmentState extends State<HomeFragment> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text(
-              "Latest News",
+              Strings.latestNews,
               style: Theme.of(context).textTheme.subhead.copyWith(
                   fontSize: 14,
-                  color: Color(0xffAD8D0B),
+                  color: Pallete.primary,
                   fontWeight: FontWeight.w400),
             ),
-            Text(
-              "view all >",
-              style: Theme.of(context).textTheme.subhead.copyWith(
-                  fontSize: 14,
-                  color: Color(0xffAD8D0B),
-                  fontWeight: FontWeight.w400),
-            ),
+            Container()
+            // Text(
+            //   Strings.viewAll,
+            //   style: Theme.of(context).textTheme.subhead.copyWith(
+            //       fontSize: 14,
+            //       color: Pallete.primary,
+            //       fontWeight: FontWeight.w400),
+            // ),
           ],
         ));
   }
@@ -238,10 +253,10 @@ class _HomeFragmentState extends State<HomeFragment> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text(
-              "Rewards",
+              Strings.rewards,
               style: Theme.of(context).textTheme.subhead.copyWith(
                   fontSize: 14,
-                  color: Color(0xffAD8D0B),
+                  color: Pallete.primary,
                   fontWeight: FontWeight.w400),
             ),
             GestureDetector(
@@ -251,10 +266,10 @@ class _HomeFragmentState extends State<HomeFragment> {
                         builder: (BuildContext context) =>
                             RewardsLibraryPage())),
                 child: Text(
-                  "view all >",
+                  Strings.viewAll,
                   style: Theme.of(context).textTheme.subhead.copyWith(
                       fontSize: 14,
-                      color: Color(0xffAD8D0B),
+                      color: Pallete.primary,
                       fontWeight: FontWeight.w400),
                 )),
           ],
@@ -268,10 +283,10 @@ class _HomeFragmentState extends State<HomeFragment> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text(
-              "Partners",
+              Strings.partners,
               style: Theme.of(context).textTheme.subhead.copyWith(
                   fontSize: 14,
-                  color: Color(0xffAD8D0B),
+                  color: Pallete.primary,
                   fontWeight: FontWeight.w400),
             ),
             GestureDetector(
@@ -281,10 +296,10 @@ class _HomeFragmentState extends State<HomeFragment> {
                         builder: (BuildContext context) =>
                             PartnersLibraryPage())),
                 child: Text(
-                  "view all >",
+                  Strings.viewAll,
                   style: Theme.of(context).textTheme.subhead.copyWith(
                       fontSize: 14,
-                      color: Color(0xffAD8D0B),
+                      color: Pallete.primary,
                       fontWeight: FontWeight.w400),
                 )),
           ],
@@ -294,18 +309,18 @@ class _HomeFragmentState extends State<HomeFragment> {
   Widget _buildAdsLabel() {
     return Container(
         margin: EdgeInsets.only(left: 10, right: 15),
-        child: Text("Ads",
+        child: Text(Strings.ads,
             style: Theme.of(context).textTheme.subhead.copyWith(
                 fontSize: 14,
-                color: Color(0xffAD8D0B),
+                color: Pallete.primary,
                 fontWeight: FontWeight.w400)));
   }
 
-  Widget _buildAds() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10),
-      height: 60,
-      color: Colors.grey,
-    );
-  }
+  // Widget _buildAds() {
+  //   return Container(
+  //     margin: EdgeInsets.symmetric(horizontal: 10),
+  //     height: 60,
+  //     color: Colors.grey,
+  //   );
+  // }
 }

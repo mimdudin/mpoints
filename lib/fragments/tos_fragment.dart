@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../utils/terms_privacy_content.dart';
+
 class TermsAndPrivacyFragment extends StatefulWidget {
   @override
   _TermsAndPrivacyFragmentState createState() => _TermsAndPrivacyFragmentState();
@@ -8,8 +10,6 @@ class TermsAndPrivacyFragment extends StatefulWidget {
 class _TermsAndPrivacyFragmentState extends State<TermsAndPrivacyFragment> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(child: Text("TermsAndPrivacy Fragment"),),
-    );
+    return TermsPrivacyContent(0);
   }
 }

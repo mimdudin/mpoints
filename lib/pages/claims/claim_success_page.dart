@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
 class ClaimSuccessPage extends StatefulWidget {
+  final int claim;
+
+  ClaimSuccessPage(this.claim);
+
   @override
   _ClaimSuccessPageState createState() => _ClaimSuccessPageState();
 }
@@ -19,7 +23,7 @@ class _ClaimSuccessPageState extends State<ClaimSuccessPage> {
           children: <Widget>[
             _buildSomeText("Congratulations!!!", 24),
             SizedBox(height: 10),
-            _buildSomeText("You got 999,999 Mpoints.", 14),
+            _buildSomeText("You got ${widget.claim} Mpoints.", 14),
             SizedBox(height: 60),
             _buildSuccessIcon(),
             SizedBox(height: 30),
@@ -77,22 +81,21 @@ class _ClaimSuccessPageState extends State<ClaimSuccessPage> {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(100))),
             child: RaisedButton.icon(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(100))),
-              icon: Icon(
-                Icons.home,
-                color: Colors.white,
-              ),
-              label: Text(
-                "Home",
-                style: Theme.of(context)
-                    .textTheme
-                    .button
-                    .copyWith(fontSize: 16, color: Colors.white),
-              ),
-              color: Color(0xffAD8D0B),
-              onPressed: () {},
-            ),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(100))),
+                icon: Icon(
+                  Icons.home,
+                  color: Colors.white,
+                ),
+                label: Text(
+                  "Home",
+                  style: Theme.of(context)
+                      .textTheme
+                      .button
+                      .copyWith(fontSize: 16, color: Colors.white),
+                ),
+                color: Color(0xffAD8D0B),
+                onPressed: () => Navigator.of(context).pop()),
           ),
           SizedBox(width: 30),
           Container(

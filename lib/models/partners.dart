@@ -2,6 +2,7 @@ class Partners {
   String id, name, category;
   String logo, email, facebook;
   String phoneNumber, website;
+  bool isNewest, isPopular;
 
   Partners(
       {this.id,
@@ -11,7 +12,9 @@ class Partners {
       this.email,
       this.facebook,
       this.phoneNumber,
-      this.website});
+      this.website,
+      this.isNewest,
+      this.isPopular});
 
   factory Partners.fromJson(String partnerId, Map<String, dynamic> json) {
     return Partners(
@@ -22,6 +25,8 @@ class Partners {
         email: json['email'],
         facebook: json['facebook'],
         phoneNumber: json['phone_number'],
-        website: json['website']);
+        website: json['website'],
+        isNewest: json['isNewest'],
+        isPopular: json['isPopular']);
   }
 }

@@ -36,6 +36,9 @@ dependencies:
     git:
       url: git://github.com/facundomedica/fast_qr_reader_view.git
   permission_handler: ^2.2.0
+  rflutter_alert: ^1.0.2
+  carousel_slider: ^1.3.0
+  url_launcher: ^5.0.2
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +65,8 @@ flutter:
    - assets/images/logo/logo_v1.png
    - assets/images/logo/logo_v2.png
    - assets/images/qrcode.jpg
+   - assets/images/QR.png
+
 
 
 

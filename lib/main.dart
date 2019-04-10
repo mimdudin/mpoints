@@ -5,8 +5,10 @@ import './home.dart';
 import './root_page.dart';
 import './services/main_model.dart';
 import './authentications/login_page.dart';
+import './utils/pallete.dart';
 import './splashscreen.dart';
 import './authentications/auth.dart';
+import './pages/rewards_detail_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -17,11 +19,13 @@ class MyApp extends StatelessWidget {
     return ScopedModel(
       model: model,
       child: MaterialApp(
-        theme: ThemeData(primaryColor: Color(0xffAD8D0B)),
+        theme: ThemeData(
+            primaryColor: Pallete.primary, cursorColor: Pallete.primary),
         home: SplashScreen(),
         routes: {
           '/main': (BuildContext context) =>
-              RootPage(model: model, auth: Auth())
+              RootPage(model: model, auth: Auth()),
+          '/rewardDetail': (BuildContext context) => RewardsDetailPage()
         },
       ),
     );

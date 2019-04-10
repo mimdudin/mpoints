@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:scoped_model/scoped_model.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -12,6 +12,9 @@ import './services/main_model.dart';
 import './pages/profiles/profile_page.dart';
 import './pages/claims/claim_points_page.dart';
 import './authentications/auth.dart';
+import './utils/strings.dart';
+import './utils/pallete.dart';
+import './utils/circular_loading.dart';
 
 class Home extends StatefulWidget {
   final MainModel model;
@@ -21,9 +24,10 @@ class Home extends StatefulWidget {
   Home({this.auth, this.onSignedOut, this.model});
 
   final drawerItems = [
-    new DrawerItem(title: "Home", icon: FontAwesomeIcons.home),
-    new DrawerItem(title: "Statement", icon: FontAwesomeIcons.chartBar),
-    new DrawerItem(title: "Terms and Privacy", icon: FontAwesomeIcons.fileAlt),
+    new DrawerItem(title: Strings.home, icon: FontAwesomeIcons.home),
+    new DrawerItem(title: Strings.statement, icon: FontAwesomeIcons.chartBar),
+    new DrawerItem(
+        title: Strings.termsAndPrivacyTOS, icon: FontAwesomeIcons.fileAlt),
     // new DrawerItem(title: "Logout", icon: Icons.exit_to_app)
   ];
   @override
@@ -36,7 +40,7 @@ class _HomeState extends State<Home> {
   _getDrawerItemWidget(int pos) {
     switch (pos) {
       case 0:
-        return HomeFragment(widget.model);
+        return HomeFragment();
       case 1:
         return StatementFragment();
       case 2:
@@ -55,15 +59,20 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-
-    loadData();
+    widget.auth.currentUser().then((val) {
+      loadData(val.uid);
+      print(val);
+    });
   }
 
-  Future loadData() async {
+  Future loadData(String userId) async {
     await Future.wait([
+      widget.model.fetchNewsList(),
       widget.model.fetchRewardList(),
       widget.model.fetchPartnerList(),
-      PermissionHandler().requestPermissions([PermissionGroup.camera])
+      widget.model.fetchAds(),
+      widget.model.fetchUserById(userId),
+      // PermissionHandler().requestPermissions([PermissionGroup.camera])
     ]);
   }
 
@@ -73,7 +82,7 @@ class _HomeState extends State<Home> {
     for (var i = 0; i < widget.drawerItems.length; i++) {
       var d = widget.drawerItems[i];
       drawerOptions.add(new ListTile(
-        leading: Icon(d.icon, color: Color(0xffAD8D0B), size: 26),
+        leading: Icon(d.icon, color: Pallete.primary, size: 26),
         title: Text(d.title,
             style: TextStyle(
                 fontSize: 18, letterSpacing: 1, fontWeight: FontWeight.w400)),
@@ -81,32 +90,56 @@ class _HomeState extends State<Home> {
         onTap: () => _onSelectItem(i),
       ));
     }
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0.0,
-        titleSpacing: 0.0,
-      ),
-      drawer: Drawer(
-        child: ListView(
-          children: <Widget>[
-            _buildProfileBanner(),
-            Column(children: drawerOptions),
-            // Divider(height: 0),
-            _buildSignOut(),
-            // Divider(height: 0)
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (BuildContext context) => ClaimPointsPage())),
-        tooltip: "Claims",
-        child: Icon(Icons.add, size: 40),
-        backgroundColor: Color(0xffAD8D0B),
-      ),
-      body: _getDrawerItemWidget(_selectedDrawerIndex),
+
+    return ScopedModelDescendant<MainModel>(
+      builder: (context, child, model) {
+        return Scaffold(
+          appBar: AppBar(
+            elevation: 0.0,
+            titleSpacing: 0.0,
+            title: Text(
+                widget.drawerItems[_selectedDrawerIndex].title == Strings.home
+                    ? ""
+                    : widget.drawerItems[_selectedDrawerIndex].title),
+            actions: widget.drawerItems[_selectedDrawerIndex].title ==
+                        Strings.home ||
+                    widget.drawerItems[_selectedDrawerIndex].title ==
+                        Strings.termsAndPrivacyTOS
+                ? <Widget>[]
+                : <Widget>[
+                    IconButton(
+                      icon: Icon(Icons.search),
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.filter_list),
+                      onPressed: () {},
+                    ),
+                  ],
+          ),
+          drawer: Drawer(
+            child: ListView(
+              children: <Widget>[
+                _buildProfileBanner(model),
+                Column(children: drawerOptions),
+                // Divider(height: 0),
+                _buildSignOut(),
+                // Divider(height: 0)
+              ],
+            ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => ClaimPointsPage())),
+            tooltip: Strings.tooltipClaims,
+            child: Icon(Icons.add, size: 40),
+            backgroundColor: Pallete.primary,
+          ),
+          body: _getDrawerItemWidget(_selectedDrawerIndex),
+        );
+      },
     );
   }
 
@@ -116,8 +149,8 @@ class _HomeState extends State<Home> {
         leading: Container(
             padding: EdgeInsets.only(left: 4.0),
             child: Icon(FontAwesomeIcons.signOutAlt,
-                color: Color(0xffAD8D0B), size: 28)),
-        title: Text('Sign Out',
+                color: Pallete.primary, size: 28)),
+        title: Text(Strings.signOut,
             style: TextStyle(
                 fontSize: 18, letterSpacing: 1, fontWeight: FontWeight.w400)),
         onTap: () {
@@ -129,13 +162,13 @@ class _HomeState extends State<Home> {
         });
   }
 
-  Widget _buildProfileBanner() {
+  Widget _buildProfileBanner(MainModel model) {
     return GestureDetector(
       onTap: () => Navigator.push(context,
           MaterialPageRoute(builder: (BuildContext context) => ProfilePage())),
       child: Container(
           height: 210,
-          color: Color(0xffAD8D0B),
+          color: Pallete.primary,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
@@ -161,12 +194,10 @@ class _HomeState extends State<Home> {
                     height: 200.0,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Center(
-                          child: SpinKitFadingCube(
-                            color: Colors.white54,
-                            size: 10,
-                          ),
+                          child: LoadingCircular10(),
                         ),
-                    imageUrl: "http://via.placeholder.com/200x150",
+                    imageUrl: model.user?.photo ??
+                        "http://via.placeholder.com/200x150",
                     errorWidget: (context, url, error) => new Icon(Icons.error),
                     fadeOutDuration: new Duration(seconds: 1),
                     fadeInDuration: new Duration(seconds: 3),
@@ -176,7 +207,11 @@ class _HomeState extends State<Home> {
               ),
               SizedBox(height: 15),
               Text(
-                "Gino Furcy",
+                model.isLoadingUser
+                    ? 'Loading...'
+                    : model.user == null || model.user.firstName == ""
+                        ? "Unknown"
+                        : "${model.user.firstName} ${model.user.lastName}",
                 style: Theme.of(context)
                     .textTheme
                     .subhead
@@ -184,7 +219,11 @@ class _HomeState extends State<Home> {
               ),
               SizedBox(height: 3),
               Text(
-                "ginofurcy@gmail.com",
+                model.isLoadingUser
+                    ? 'Loading...'
+                    : model.user == null || model.user.email == ""
+                        ? "anonymous@gmail.com"
+                        : "${model.user.email}",
                 style: Theme.of(context)
                     .textTheme
                     .subhead

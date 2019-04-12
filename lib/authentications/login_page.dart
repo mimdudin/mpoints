@@ -5,6 +5,9 @@ import 'package:flutter/services.dart';
 import './signup_page.dart';
 import '../pages/terms_privacy_page.dart';
 import './auth.dart';
+import '../utils/circular_loading.dart';
+import '../utils/pallete.dart';
+import '../utils/strings.dart';
 
 class LoginPage extends StatefulWidget {
   final BaseAuth auth;
@@ -73,11 +76,11 @@ class _LoginPageState extends State<LoginPage> {
                   Container(
                     alignment: Alignment.center,
                     child: Text(
-                      "SIGN IN",
+                      Strings.signIn,
                       style: Theme.of(context)
                           .textTheme
                           .subhead
-                          .copyWith(fontSize: 30, color: Color(0xffAD8D0B)),
+                          .copyWith(fontSize: 30, color: Pallete.primary),
                     ),
                   ),
                   SizedBox(height: 10),
@@ -114,19 +117,21 @@ class _LoginPageState extends State<LoginPage> {
     _formKey.currentState.save();
 
     try {
-      var user =
-          await widget.auth.signInWithEmailAndPassword(_email, _password);
-      print("Signed In ${user.uid}");
-      widget.onSignedIn();
+      await widget.auth
+          .signInWithEmailAndPassword(_email, _password)
+          .then((user) {
+        print("Signed In ${user.uid}");
+        widget.onSignedIn();
 
-      setState(() {
-        _isLoading = false;
+        setState(() {
+          _isLoading = false;
+        });
+        _emailController.clear();
+        _passwordController.clear();
       });
-      _emailController.clear();
-      _passwordController.clear();
     } on PlatformException catch (e) {
       if (e.code == 'ERROR_WRONG_PASSWORD') {
-        showInSnackBar("Invalid your Email or Password.");
+        showInSnackBar(Strings.errorEmailPass);
         print(e.code);
       }
       setState(() {
@@ -142,10 +147,10 @@ class _LoginPageState extends State<LoginPage> {
           child: TextFormField(
             autofocus: false,
             controller: _emailController,
-            cursorColor: Color(0xffAD8D0B),
+            cursorColor: Pallete.primary,
             decoration: InputDecoration(
-              labelText: "Email",
-              hintText: "enter your email",
+              labelText: Strings.email,
+              hintText: Strings.hintEmail,
               hintStyle: TextStyle(
                   color: Color(0xffb7b7b7),
                   height: 1.5,
@@ -159,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
               if (value.isEmpty ||
                   !RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
                       .hasMatch(value)) {
-                return 'Please enter a valid email';
+                return Strings.enterValidEmail;
               }
             },
             onSaved: (value) => _email = value,
@@ -175,10 +180,10 @@ class _LoginPageState extends State<LoginPage> {
         children: <Widget>[
           GestureDetector(
             child: Text(
-              "Forgot Password?",
+              Strings.forgotPass,
               style: Theme.of(context).textTheme.subtitle.copyWith(
                   fontSize: 14,
-                  color: Color(0xffAD8D0B),
+                  color: Pallete.primary,
                   fontStyle: FontStyle.italic),
             ),
             onTap: _showDialog,
@@ -191,15 +196,15 @@ class _LoginPageState extends State<LoginPage> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(100))),
               child: _isLoading
-                  ? CircularProgressIndicator()
+                  ? LoadingCircular10()
                   : Text(
-                      "SIGN IN",
+                      Strings.signIn,
                       style: Theme.of(context)
                           .textTheme
                           .button
                           .copyWith(fontSize: 16, color: Colors.white),
                     ),
-              color: Color(0xffAD8D0B),
+              color: Pallete.primary,
               onPressed: _validateAndSubmit,
             ),
           ),
@@ -215,7 +220,7 @@ class _LoginPageState extends State<LoginPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Container(
-            child: Text("Don't have an account? ",
+            child: Text(Strings.dontHaveAccount,
                 style:
                     Theme.of(context).textTheme.caption.copyWith(fontSize: 13)),
           ),
@@ -230,10 +235,10 @@ class _LoginPageState extends State<LoginPage> {
                           )));
             },
             child: Container(
-              child: Text("Sign Up",
+              child: Text(Strings.signUp,
                   style: TextStyle(
                       fontSize: 15.0,
-                      color: Color(0xffAD8D0B),
+                      color: Pallete.primary,
                       fontWeight: FontWeight.bold,
                       decoration: TextDecoration.underline)),
             ),
@@ -248,7 +253,7 @@ class _LoginPageState extends State<LoginPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Container(
-          child: Text("By Sign In you agree with our ",
+          child: Text(Strings.descTerms,
               style:
                   Theme.of(context).textTheme.caption.copyWith(fontSize: 13)),
         ),
@@ -260,10 +265,10 @@ class _LoginPageState extends State<LoginPage> {
                     builder: (BuildContext context) => TermsPrivacyPage()));
           },
           child: Container(
-            child: Text("Terms.",
+            child: Text(Strings.terms,
                 style: TextStyle(
                     fontSize: 15.0,
-                    color: Color(0xffAD8D0B),
+                    color: Pallete.primary,
                     fontWeight: FontWeight.w500)),
           ),
         )
@@ -275,11 +280,11 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       children: <Widget>[
         Text(
-          "OR SIGN IN WITH",
+          Strings.orSignWith,
           style: Theme.of(context)
               .textTheme
               .subhead
-              .copyWith(fontSize: 15, color: Color(0xffAD8D0B)),
+              .copyWith(fontSize: 15, color: Pallete.primary),
         ),
         SizedBox(height: 15),
         Row(
@@ -295,7 +300,7 @@ class _LoginPageState extends State<LoginPage> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(5))),
                 label: Text(
-                  "Log In",
+                  Strings.logIn,
                   style: Theme.of(context)
                       .textTheme
                       .button
@@ -315,7 +320,7 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.all(Radius.circular(5))),
                 color: Color(0xFFdd4b39),
                 label: Text(
-                  "Sign In",
+                  Strings.signInSmall,
                   style: Theme.of(context)
                       .textTheme
                       .button
@@ -336,10 +341,10 @@ class _LoginPageState extends State<LoginPage> {
             obscureText: _obscureText,
             autofocus: false,
             controller: _passwordController,
-            cursorColor: Color(0xffAD8D0B),
+            cursorColor: Pallete.primary,
             decoration: InputDecoration(
-              labelText: "Password",
-              hintText: "enter your password",
+              labelText: Strings.password,
+              hintText: Strings.hintPassword,
               hintStyle: TextStyle(
                   color: Color(0xffb7b7b7),
                   height: 1.5,
@@ -362,7 +367,7 @@ class _LoginPageState extends State<LoginPage> {
             maxLines: 1,
             validator: (value) {
               if (value.isEmpty || value.length < 6) {
-                return "Invalid Password";
+                return Strings.errorPassword;
               }
             },
             onSaved: (value) => _password = value,
@@ -399,7 +404,7 @@ class _LoginPageState extends State<LoginPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("We will send reset password link to your email"),
+            title: Text(Strings.resetPassDesc),
             content: Container(
                 child: TextField(
               controller: _forgotPassController,
@@ -407,8 +412,8 @@ class _LoginPageState extends State<LoginPage> {
               decoration: InputDecoration(
                   hintStyle:
                       TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-                  hintText: 'Enter your email',
-                  errorText: _validate ? 'Please enter a valid email' : null),
+                  hintText: Strings.hintEmail,
+                  errorText: _validate ? Strings.enterValidEmail : null),
               onChanged: (v) => _forgotEmail = v,
             )),
             actions: <Widget>[
@@ -426,7 +431,13 @@ class _LoginPageState extends State<LoginPage> {
               //   },
               // ),
               FlatButton(
-                  child: Text("OK"),
+                  child: Text(
+                    "OK",
+                    style: Theme.of(context)
+                        .textTheme
+                        .button
+                        .copyWith(color: Pallete.primary),
+                  ),
                   onPressed: () {
                     setState(() {
                       if (_forgotPassController.text.isEmpty ||
@@ -451,26 +462,26 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _requestForgotPassword() async {
     try {
       await widget.auth.forgotPassword(_forgotEmail);
-      showInSnackBar("Requesting password reset email");
+      showInSnackBar(Strings.requestingPass);
     } catch (e) {
-      showInSnackBar(
-          "Password reset failed, did you enter the correct address?");
+      showInSnackBar(Strings.errorRequestPass);
       print("Error $e");
     }
   }
 
   Future<void> _facebookAuth() async {
     try {
-      var fbUser = await widget.auth.signInWithFacebook();
-      print("Signed in as ${fbUser.displayName}");
-      widget.onSignedIn();
+      await widget.auth.signInWithFacebook().then((user) {
+        print("Signed in as ${user.displayName}");
+        widget.onSignedIn();
+      });
 
       // Navigator.pushReplacementNamed(context, '/mainapp').then((_) {
       //   Navigator.of(context).pop();
       // });
     } on PlatformException catch (e) {
       if (e.code == 'ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL') {
-        showInSnackBar("This Email Address is already registered.");
+        showInSnackBar(Strings.alreadyRegistEmail);
         print(e.code);
       }
     }
@@ -478,12 +489,13 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _signInWithGoogle() async {
     try {
-      var user = await widget.auth.signInWithGoogle();
-      print("Signed In ${user.displayName}");
-      widget.onSignedIn();
+      await widget.auth.signInWithGoogle().then((user) {
+        print("Signed In ${user.displayName}");
+        widget.onSignedIn();
+      });
     } on PlatformException catch (e) {
       if (e.code == 'ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL') {
-        showInSnackBar("This Email Address is already registered.");
+        showInSnackBar(Strings.alreadyRegistEmail);
         print(e.code);
       }
     }

@@ -84,23 +84,10 @@ class Auth implements BaseAuth {
     final FirebaseUser currentUser = await firebaseAuth.currentUser();
     assert(user.uid == currentUser.uid);
     // setState(() {
-    if (user != null) {
-      setUidDatabse(
-        uid: user.uid,
-        firstName: user.displayName,
-        lastName: "",
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-        photo: user.photoUrl,
-      );
-    } else {
+    if (user != null)
+      await checkIfUserHasLoggedIn(user);
+    else
       print("Failed to sign in with Google.");
-    }
-    // });
-    // } on PlatformException catch (error) {
-    //   print(error.message);
-    // }
-
     return user;
   }
 
@@ -112,18 +99,24 @@ class Auth implements BaseAuth {
       String lastName,
       String phoneNumber,
       String referralBy) async {
-    FirebaseUser user = await firebaseAuth.createUserWithEmailAndPassword(
+    final FirebaseUser user = await firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
-
-    setUidDatabse(
-        uid: user.uid,
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        phoneNumber: phoneNumber,
-        photo: "",
-        referredBy: referralBy,
-        myReferral: "");
+    // final FirebaseUser currentUser = await firebaseAuth.currentUser();
+    // assert(user.uid == currentUser.uid);
+    if (user != null)
+      // await createFirstUser(
+      //     user, firstName, lastName, email, phoneNumber, referralBy);
+      await setUidDatabse(
+          uid: user.uid,
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          photo: "http://via.placeholder.com/200x150",
+          phoneNumber: phoneNumber,
+          referredBy: "",
+          myReferral: referralBy);
+    else
+      print("Failed to sign in with Google.");
     return user;
   }
 
@@ -134,8 +127,10 @@ class Auth implements BaseAuth {
       email: email,
       password: password,
     );
+    // final FirebaseUser currentUser = await firebaseAuth.currentUser();
+    // assert(user.uid == currentUser.uid);
     if (user != null)
-      print("Success login");
+      print("Success login!");
     else
       print("failed to login");
     return user;
@@ -145,7 +140,7 @@ class Auth implements BaseAuth {
     FacebookLoginResult result =
         await fbSignIn.logInWithReadPermissions(['email', 'public_profile']);
     final AuthCredential credential = FacebookAuthProvider.getCredential(
-      accessToken: result.accessToken.token,
+      accessToken: result.accessToken.token ?? "",
     );
     final FirebaseUser user =
         await firebaseAuth.signInWithCredential(credential);
@@ -157,23 +152,15 @@ class Auth implements BaseAuth {
     final FirebaseUser currentUser = await firebaseAuth.currentUser();
     assert(user.uid == currentUser.uid);
     // setState(() {
-    if (user != null) {
-      print('Successfully signed in with Facebook. ' + user.uid);
-      setUidDatabse(
-          uid: user.uid,
-          firstName: user.displayName,
-          lastName: "",
-          email: user.email,
-          photo: user.photoUrl,
-          phoneNumber: user.phoneNumber);
-    } else {
-      print('Failed to sign in with Facebook. ');
-    }
+    if (user != null)
+      await checkIfUserHasLoggedIn(user);
+    else
+      print('Failed to sign in with Facebook.');
     // });
     return user;
   }
 
-  void setUidDatabse(
+  Future<void> setUidDatabse(
       {String uid,
       String firstName,
       String lastName,
@@ -183,7 +170,6 @@ class Auth implements BaseAuth {
       String referredBy,
       String myReferral}) async {
     final Map<String, dynamic> _userData = {
-      'uid': uid,
       'firstName': firstName,
       'lastName': lastName,
       'email': email,
@@ -195,7 +181,8 @@ class Auth implements BaseAuth {
       'mpoints': 0,
       'mpointsUsed': 0,
       'mpointsReceived': 0,
-      'statements': "",
+      'social_points': 0,
+      // 'statements': '',
     };
 
     _userRef = FirebaseDatabase.instance.reference().child("users");
@@ -208,5 +195,119 @@ class Auth implements BaseAuth {
     } on PlatformException catch (e) {
       print(e.code);
     }
+  }
+
+  Future<void> checkIfUserHasLoggedIn(FirebaseUser user) async {
+    // _isLoadingClaim = true;
+    // notifyListeners();
+
+    DatabaseReference ref = FirebaseDatabase.instance.reference();
+    await ref
+        .child("users")
+        .orderByKey()
+        .equalTo(user.uid)
+        .once()
+        .then((DataSnapshot snap) {
+      Map<dynamic, dynamic> values = snap.value;
+      print(values);
+
+      // final List<Claims> _fetchedClaims = [];
+
+      if (values == null) {
+        setUidDatabse(
+            uid: user.uid,
+            firstName: user.displayName,
+            lastName: "",
+            email: user.email,
+            photo: user.photoUrl,
+            phoneNumber: user.phoneNumber,
+            referredBy: "",
+            myReferral: "");
+        //   values.forEach((key, data) {
+        //     print(key);
+        //     print(data);
+        //     var _claims = new Claims(
+        //       key,
+        //       data['contra'],
+        //       data['partner_name'],
+        //       data['claim'],
+        //       data['timestamp'],
+        //       data['employee_pin'],
+        //       data['partner_number'],
+        //       data['purchase_amount'],
+        //       data['social_points'],
+        //     );
+        //     _fetchedClaims.add(_claims);
+        // });
+      }
+
+      // _claimList = _fetchedClaims;
+
+      // print(_claimList.length.toString());
+
+      // _isLoadingClaim = false;
+      // notifyListeners();
+    });
+    // return _claimList;
+  }
+
+  Future<void> createFirstUser(
+      FirebaseUser user,
+      String firstName,
+      String lastName,
+      String email,
+      String phoneNumber,
+      String referredBy) async {
+    // _isLoadingClaim = true;
+    // notifyListeners();
+
+    DatabaseReference ref = FirebaseDatabase.instance.reference();
+    await ref
+        .child("users")
+        .orderByKey()
+        .equalTo(user.uid)
+        .once()
+        .then((DataSnapshot snap) {
+      Map<dynamic, dynamic> values = snap.value;
+      print(values);
+
+      // final List<Claims> _fetchedClaims = [];
+
+      if (values == null) {
+        setUidDatabse(
+            uid: user.uid,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            photo: "",
+            phoneNumber: phoneNumber,
+            referredBy: referredBy,
+            myReferral: "");
+        //   values.forEach((key, data) {
+        //     print(key);
+        //     print(data);
+        //     var _claims = new Claims(
+        //       key,
+        //       data['contra'],
+        //       data['partner_name'],
+        //       data['claim'],
+        //       data['timestamp'],
+        //       data['employee_pin'],
+        //       data['partner_number'],
+        //       data['purchase_amount'],
+        //       data['social_points'],
+        //     );
+        //     _fetchedClaims.add(_claims);
+        // });
+      }
+
+      // _claimList = _fetchedClaims;
+
+      // print(_claimList.length.toString());
+
+      // _isLoadingClaim = false;
+      // notifyListeners();
+    });
+    // return _claimList;
   }
 }

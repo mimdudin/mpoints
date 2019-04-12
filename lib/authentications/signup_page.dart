@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../utils/phone_input_formatter.dart';
+import '../utils/pallete.dart';
+import '../utils/strings.dart';
+import '../utils/circular_loading.dart';
 import '../pages/terms_privacy_page.dart';
 import './auth.dart';
 
@@ -80,11 +83,11 @@ class _SignupPageState extends State<SignupPage> {
                   Container(
                     alignment: Alignment.center,
                     child: Text(
-                      "SIGN UP",
+                      Strings.signUp.toUpperCase(),
                       style: Theme.of(context)
                           .textTheme
                           .subhead
-                          .copyWith(fontSize: 30, color: Color(0xffAD8D0B)),
+                          .copyWith(fontSize: 30, color: Pallete.primary),
                     ),
                   ),
                   SizedBox(height: 25),
@@ -118,7 +121,7 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
-  Future<void> _validateAndSubmit() async {
+  void _validateAndSubmit() async {
     if (!_formKey.currentState.validate()) {
       return;
     }
@@ -130,22 +133,24 @@ class _SignupPageState extends State<SignupPage> {
     _formKey.currentState.save();
 
     try {
-      // if (widget.auth != null) {
-      var user = await widget.auth.createUserWithEmailPassword(
-          _email, _password, _firstName, _lastName, _phoneNumber, "");
-      print("Registered User ${user.uid}");
-      widget.onSignedIn();
+      await widget.auth
+          .createUserWithEmailPassword(
+              _email, _password, _firstName, _lastName, _phoneNumber, "")
+          .then((user) {
+        print("Registered User ${user.uid}");
+        widget.onSignedIn();
 
-      setState(() {
-        _isLoading = false;
+        setState(() {
+          _isLoading = false;
+        });
+
+        Navigator.pop(context);
+        _firstController.clear();
+        _lastController.clear();
+        _phoneController.clear();
+        _emailController.clear();
+        _passwordController.clear();
       });
-      _firstController.clear();
-      _lastController.clear();
-      _phoneController.clear();
-      _emailController.clear();
-      _passwordController.clear();
-      Navigator.pop(context);
-      // }
     } on PlatformException catch (e) {
       if (e.code == 'ERROR_EMAIL_ALREADY_IN_USE') {
         showInSnackBar("Email address is already use by another account.");
@@ -171,15 +176,15 @@ class _SignupPageState extends State<SignupPage> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(100))),
               child: _isLoading
-                  ? CircularProgressIndicator()
+                  ? LoadingCircular10()
                   : Text(
-                      "SIGN UP",
+                      Strings.signUp.toUpperCase(),
                       style: Theme.of(context)
                           .textTheme
                           .button
                           .copyWith(fontSize: 16, color: Colors.white),
                     ),
-              color: Color(0xffAD8D0B),
+              color: Pallete.primary,
               onPressed: _validateAndSubmit,
             ),
           ],
@@ -191,9 +196,9 @@ class _SignupPageState extends State<SignupPage> {
       child: TextFormField(
         autofocus: false,
         controller: _firstController,
-        cursorColor: Color(0xffAD8D0B),
+        cursorColor: Pallete.primary,
         decoration: InputDecoration(
-          hintText: "First Name",
+          hintText: Strings.firstName,
           hintStyle: TextStyle(
               color: Color(0xffb7b7b7),
               height: 1.5,
@@ -205,7 +210,7 @@ class _SignupPageState extends State<SignupPage> {
         maxLines: 1,
         validator: (value) {
           if (value.isEmpty) {
-            return "First Name can't be empty.";
+            return Strings.errorFirstName;
           }
         },
         onSaved: (value) => _firstName = value,
@@ -218,9 +223,9 @@ class _SignupPageState extends State<SignupPage> {
       child: TextFormField(
         autofocus: false,
         controller: _lastController,
-        cursorColor: Color(0xffAD8D0B),
+        cursorColor: Pallete.primary,
         decoration: InputDecoration(
-          hintText: "Last Name",
+          hintText: Strings.lastName,
           hintStyle: TextStyle(
               color: Color(0xffb7b7b7),
               height: 1.5,
@@ -232,7 +237,7 @@ class _SignupPageState extends State<SignupPage> {
         maxLines: 1,
         validator: (value) {
           if (value.isEmpty) {
-            return "Last Name can't be empty.";
+            return Strings.errorLastName;
           }
         },
         onSaved: (value) => _lastName = value,
@@ -247,9 +252,9 @@ class _SignupPageState extends State<SignupPage> {
           child: TextFormField(
             autofocus: false,
             controller: _phoneController,
-            cursorColor: Color(0xffAD8D0B),
+            cursorColor: Pallete.primary,
             decoration: InputDecoration(
-              labelText: 'Phone Number',
+              labelText: Strings.phoneNumber,
               labelStyle: TextStyle(
                   color: Color(0xffb7b7b7),
                   height: 1.2,
@@ -260,9 +265,9 @@ class _SignupPageState extends State<SignupPage> {
                   height: 1.5,
                   fontSize: 13.0,
                   fontWeight: FontWeight.w500),
-              prefixText: '+1 ',
+              prefixText: '+230 ',
               prefixStyle: TextStyle(
-                  color: Color(0xffAD8D0B),
+                  color: Pallete.primary,
                   fontSize: 16,
                   fontWeight: FontWeight.bold),
             ),
@@ -271,7 +276,7 @@ class _SignupPageState extends State<SignupPage> {
             maxLines: 1,
             validator: (value) {
               if (value.isEmpty) {
-                return "Invalid Phone Number";
+                return Strings.invalidPhoneNumber;
               }
             },
             inputFormatters: <TextInputFormatter>[
@@ -291,9 +296,9 @@ class _SignupPageState extends State<SignupPage> {
           child: TextFormField(
             autofocus: false,
             controller: _emailController,
-            cursorColor: Color(0xffAD8D0B),
+            cursorColor: Pallete.primary,
             decoration: InputDecoration(
-              hintText: "Email",
+              hintText: Strings.email,
               hintStyle: TextStyle(
                   color: Color(0xffb7b7b7),
                   height: 1.5,
@@ -307,7 +312,7 @@ class _SignupPageState extends State<SignupPage> {
               if (value.isEmpty ||
                   !RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
                       .hasMatch(value)) {
-                return 'Please enter a valid email';
+                return Strings.enterValidEmail;
               }
             },
             onSaved: (value) => _email = value,
@@ -323,9 +328,9 @@ class _SignupPageState extends State<SignupPage> {
             obscureText: _obscureText,
             autofocus: false,
             controller: _passwordController,
-            cursorColor: Color(0xffAD8D0B),
+            cursorColor: Pallete.primary,
             decoration: InputDecoration(
-              hintText: "Password",
+              hintText: Strings.password,
               hintStyle: TextStyle(
                   color: Color(0xffb7b7b7),
                   height: 1.5,
@@ -348,7 +353,7 @@ class _SignupPageState extends State<SignupPage> {
             maxLines: 1,
             validator: (value) {
               if (value.isEmpty || value.length < 6) {
-                return "Invalid Password";
+                return Strings.errorPassword;
               }
             },
             onSaved: (value) => _password = value,
@@ -361,22 +366,22 @@ class _SignupPageState extends State<SignupPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Container(
-          child: Text("By Sign In you agree with our ",
+          child: Text(Strings.descTerms,
               style:
                   Theme.of(context).textTheme.caption.copyWith(fontSize: 13)),
         ),
         GestureDetector(
           onTap: () {
-               Navigator.push(
+            Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (BuildContext context) => TermsPrivacyPage()));
           },
           child: Container(
-            child: Text("Terms.",
+            child: Text(Strings.terms,
                 style: TextStyle(
                     fontSize: 15.0,
-                    color: Color(0xffAD8D0B),
+                    color: Pallete.primary,
                     fontWeight: FontWeight.w500)),
           ),
         )
@@ -403,7 +408,7 @@ class _SignupPageState extends State<SignupPage> {
           icon: Icon(
             Icons.arrow_back,
             size: 28,
-            color: Color(0xffAD8D0B),
+            color: Pallete.primary,
           ),
           onPressed: () => Navigator.pop(context),
         ));

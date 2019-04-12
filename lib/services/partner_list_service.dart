@@ -59,4 +59,9 @@ mixin PartnerListService on Model {
       throw Exception('failed to load data');
     }
   }
+
+    void clearPartnerList() {
+    _partnerList.clear();
+    notifyListeners();
+  }
 }

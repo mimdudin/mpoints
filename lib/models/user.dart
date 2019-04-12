@@ -4,7 +4,7 @@ class User {
   String uid, firstName, lastName;
   String email, phoneNumber, photo;
   String referredBy, myReferral;
-  int mpoints, mpointsUsed, mpointsReceived;
+  int mpoints, mpointsUsed, mpointsReceived, socialPoints;
   List<Statement> statementList;
 
   User(
@@ -19,5 +19,6 @@ class User {
       this.mpoints,
       this.mpointsUsed,
       this.mpointsReceived,
+      this.socialPoints,
       this.statementList});
 }

@@ -14,6 +14,10 @@ void logError(String code, String message) =>
     print('Error: $code\nError Message: $message');
 
 class ClaimValidationPage extends StatefulWidget {
+  final MainModel model;
+
+  ClaimValidationPage(this.model);
+
   @override
   _ClaimValidationPageState createState() => new _ClaimValidationPageState();
 }
@@ -29,7 +33,7 @@ class _ClaimValidationPageState extends State<ClaimValidationPage>
   var _partNumController = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   var _validate = false;
-  String _purchaseAmount;
+  String _partnerNumber;
 
   @override
   void initState() {
@@ -195,7 +199,7 @@ class _ClaimValidationPageState extends State<ClaimValidationPage>
                         builder: (BuildContext context) => ClaimSummaryPage(
                             model.claimList
                                 .where((claim) =>
-                                    claim.partnerNumber == _purchaseAmount)
+                                    claim.partnerNumber == _partnerNumber)
                                 .toList())));
                 _partNumController.clear();
               } else {
@@ -253,7 +257,7 @@ class _ClaimValidationPageState extends State<ClaimValidationPage>
         keyboardType: TextInputType.number,
         onChanged: (v) {
           setState(() {
-            _purchaseAmount = v;
+            _partnerNumber = v;
             print(v);
           });
         },
@@ -294,7 +298,29 @@ class _ClaimValidationPageState extends State<ClaimValidationPage>
   }
 
   void onCodeRead(dynamic value) {
-    showInSnackBar(value.toString());
+    print(value.toString());
+    setState(() {
+      if (widget.model.claimList
+              .where((claim) => claim.partnerNumber == value.toString())
+              .toList()
+              .length >
+          0) {
+        _validate = false;
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) => ClaimSummaryPage(widget
+                    .model.claimList
+                    .where((claim) => claim.partnerNumber == value.toString())
+                    .toList())));
+        _partNumController.clear();
+      } else {
+        _validate = false;
+
+        _buildAlert(context);
+        _partNumController.clear();
+      }
+    });
     // ... do something
     // wait 5 seconds then start scanning again.
     new Future.delayed(const Duration(seconds: 5), controller.startScanning);
@@ -309,7 +335,7 @@ class _ClaimValidationPageState extends State<ClaimValidationPage>
 
     // If the controller is updated then update the UI.
     controller.addListener(() {
-      if (mounted) setState(() {});
+      // if (mounted) setState(() {});
       if (controller.value.hasError) {
         showInSnackBar('Camera error ${controller.value.errorDescription}');
       }

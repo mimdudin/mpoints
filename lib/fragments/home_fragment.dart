@@ -76,7 +76,7 @@ class _HomeFragmentState extends State<HomeFragment> {
               _buildRewardsLabel(),
               SizedBox(height: 7),
               Container(
-                  height: 190,
+                  height: 195,
                   child: model.isLoadingrewardList
                       ? RewardsLoading()
                       : RewardsListView()),
@@ -84,7 +84,7 @@ class _HomeFragmentState extends State<HomeFragment> {
               _buildPartnersLabel(),
               SizedBox(height: 8),
               Container(
-                  height: 155,
+                  height: 160,
                   child: model.isLoadingPartnerList
                       ? PartnersLoading()
                       : PartnerListView()),
@@ -122,7 +122,11 @@ class _HomeFragmentState extends State<HomeFragment> {
                   ),
                   SizedBox(width: 10),
                   Text(
-                    "9999,99",
+                    model.isLoadingUser
+                        ? '...'
+                        : model.user == null
+                            ? "0"
+                            : "${model.user.socialPoints}",
                     style: Theme.of(context)
                         .textTheme
                         .subhead
@@ -140,7 +144,9 @@ class _HomeFragmentState extends State<HomeFragment> {
                   ),
                   SizedBox(width: 10),
                   Text(
-                    "9999,99",
+                    model.isLoadingUser
+                        ? '...'
+                        : model.user == null ? "0" : "${model.user.mpoints}",
                     style: Theme.of(context)
                         .textTheme
                         .subhead

@@ -285,7 +285,23 @@ class _RedeemValidationPageState extends State<RedeemValidationPage>
   }
 
   void onCodeRead(dynamic value) {
-    showInSnackBar(value.toString());
+    print(value.toString());
+    setState(() {
+      if (value.toString() == widget.rewards.partnerNumber) {
+        _validate = false;
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) =>
+                    RedeemSummaryPage(widget.rewards, widget.i)));
+        _partNumberController.clear();
+      } else {
+        _validate = false;
+
+        _buildAlert(context);
+        _partNumberController.clear();
+      }
+    });
     // ... do something
     // wait 5 seconds then start scanning again.
     new Future.delayed(const Duration(seconds: 5), controller.startScanning);

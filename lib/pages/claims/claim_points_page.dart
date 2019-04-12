@@ -148,7 +148,7 @@ class _ClaimPointsPageState extends State<ClaimPointsPage> {
                             context,
                             MaterialPageRoute(
                                 builder: (BuildContext context) =>
-                                    ClaimValidationPage()));
+                                    ClaimValidationPage(model)));
 
                         _purchaseController.clear();
                       } else {

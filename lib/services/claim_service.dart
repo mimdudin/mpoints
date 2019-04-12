@@ -72,4 +72,9 @@ mixin ClaimService on Model {
     });
     return _claimList;
   }
+
+  void clearClaimList() {
+    _claimList.clear();
+    notifyListeners();
+  }
 }

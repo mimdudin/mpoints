@@ -2,8 +2,9 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
-import './reward_list_service.dart';
+import 'package:firebase_database/firebase_database.dart';
 
+import './reward_list_service.dart';
 import '../models/user.dart';
 import '../utils/constant.dart';
 import '../models/statement.dart';
@@ -12,14 +13,39 @@ mixin UserService on Model, RewardListService {
   User _user = new User();
   User get user => _user;
 
+  String _status = "";
+  String get status => _status;
+
   List<Statement> _statementList = [];
-  List<Statement> get statementList => _statementList;
+  // List<Statement> get statementList => _statementList;
+
+  List<Statement> get statementList {
+    if (_status == 'Claim') {
+      return List.from(_statementList
+          .where((statement) => statement.claim != null)
+          .toList());
+    } else if (_status == 'Redeem') {
+      return List.from(_statementList
+          .where((statement) => statement.rewardName != null)
+          .toList());
+    }
+    return List.from(_statementList);
+  }
 
   bool _isLoadingUser = false;
   bool get isLoadingUser => _isLoadingUser;
 
   int getStatementsCount() {
     return _statementList.length;
+  }
+
+  void addStatementToList(Statement statement) {
+    return _statementList.add(statement);
+  }
+
+  void setStatus(String update) {
+    _status = update;
+    notifyListeners();
   }
 
   Future<User> fetchUserById(String userId) async {
@@ -32,41 +58,24 @@ mixin UserService on Model, RewardListService {
     if (response.statusCode == 200) {
       var result = json.decode(response.body);
       print(result);
+      if (result != null) {
+        fetchStatements(userId);
 
-      // if (result['addresses'] != null) {
-      //   result['addresses'].forEach((String addressId, dynamic jsonAddress) {
-      //     print("ADDRESS: $jsonAddress");
-      //     var address = Address.fromJson(addressId, jsonAddress);
-      //     addressToList(address);
-      //   });
-      // }
-      final List<Statement> fetchedStatementList = [];
-
-      if (result['statements'] != null) {
-        result['statements']
-            .forEach((String statementId, dynamic jsonStatement) {
-          print("STATEMENT: $jsonStatement");
-          var statement = Statement.fromJson(statementId, jsonStatement);
-          fetchedStatementList.add(statement);
-        });
-
-        _statementList = fetchedStatementList;
+        _user = User(
+            uid: userId,
+            firstName: result['firstName'],
+            lastName: result['lastName'],
+            email: result['email'],
+            phoneNumber: result['phoneNumber'],
+            photo: result['photo'],
+            referredBy: result['referredBy'],
+            myReferral: result['referrals'],
+            mpoints: result['mpoints'],
+            mpointsUsed: result['mpointsUsed'],
+            mpointsReceived: result['mpointsReceived'],
+            socialPoints: result['social_points'],
+            statementList: _statementList);
       }
-
-      _user = User(
-          uid: userId,
-          firstName: result['firstName'],
-          lastName: result['lastName'],
-          email: result['email'],
-          phoneNumber: result['phoneNumber'],
-          photo: result['photo'],
-          referredBy: result['referredBy'],
-          myReferral: result['referrals'],
-          mpoints: result['mpoints'],
-          mpointsUsed: result['mpointsUsed'],
-          mpointsReceived: result['mpointsReceived'],
-          statementList: _statementList);
-
       //  User.fromJson(result);
 
       _isLoadingUser = false;
@@ -103,6 +112,7 @@ mixin UserService on Model, RewardListService {
         mpoints: mpoints,
         mpointsUsed: _user?.mpointsUsed,
         mpointsReceived: _user?.mpointsReceived,
+        socialPoints: _user?.socialPoints,
         statementList: _statementList);
 
     _user = updateUser;
@@ -135,6 +145,7 @@ mixin UserService on Model, RewardListService {
         mpoints: _user?.mpoints,
         mpointsUsed: _user.mpointsUsed + rewardCost,
         mpointsReceived: _user?.mpointsReceived,
+        socialPoints: _user?.socialPoints,
         statementList: _statementList);
 
     _user = updateUser;
@@ -167,6 +178,40 @@ mixin UserService on Model, RewardListService {
         mpoints: _user?.mpoints,
         mpointsUsed: _user?.mpointsUsed,
         mpointsReceived: _user.mpointsReceived + claim,
+        socialPoints: _user?.socialPoints,
+        statementList: _statementList);
+
+    _user = updateUser;
+
+    _isLoadingUser = false;
+    notifyListeners();
+  }
+
+  Future<void> updateSocialPoints(int socialPoints) async {
+    _isLoadingUser = true;
+    notifyListeners();
+
+    final response = await http.put(
+        Constant.baseUrl +
+            Constant.userParam +
+            '/${_user.uid}/social_points' +
+            Constant.jsonExt,
+        body: json.encode(user.socialPoints + socialPoints));
+    print(json.decode(response.body));
+
+    final User updateUser = User(
+        uid: _user?.uid,
+        firstName: _user?.firstName,
+        lastName: _user?.lastName,
+        email: _user?.email,
+        phoneNumber: _user?.phoneNumber,
+        photo: _user?.photo,
+        referredBy: _user?.referredBy,
+        myReferral: _user?.myReferral,
+        mpoints: _user?.mpoints,
+        mpointsUsed: _user?.mpointsUsed,
+        mpointsReceived: _user?.mpointsReceived,
+        socialPoints: _user.socialPoints + socialPoints,
         statementList: _statementList);
 
     _user = updateUser;
@@ -270,5 +315,49 @@ mixin UserService on Model, RewardListService {
       notifyListeners();
       throw Exception('failed to load data');
     }
+  }
+
+  Future<List<Statement>> fetchStatements(String uid) async {
+    // _isLoadingClaim = true;
+    // notifyListeners();
+
+    DatabaseReference ref = FirebaseDatabase.instance.reference();
+    await ref.child("users/$uid/statements").once().then((DataSnapshot snap) {
+      var values;
+      if (snap.value != null) {
+        values = new Map<String, dynamic>.from(snap.value);
+        print(values);
+      }
+
+      final List<Statement> _fetchedClaims = [];
+
+      if (values != null) {
+        values.forEach((key, data) {
+          print(key);
+          print(data);
+          var _statement =
+              new Statement.fromJson(key, Map<String, dynamic>.from(data));
+          _fetchedClaims.add(_statement);
+        });
+      }
+
+      _statementList = _fetchedClaims;
+      notifyListeners();
+
+      print(_statementList.length.toString());
+
+      // _isLoadingClaim = false;
+    });
+    return _statementList;
+  }
+
+  void clearUserList() {
+    _user = null;
+    notifyListeners();
+  }
+
+  void clearStatementList() {
+    _statementList.clear();
+    notifyListeners();
   }
 }

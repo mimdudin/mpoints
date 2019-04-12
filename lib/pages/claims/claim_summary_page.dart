@@ -243,7 +243,7 @@ class _ClaimSummaryPageState extends State<ClaimSummaryPage> {
                       for (var claim in widget.claimList) {
                         //  model.selectedRewad(widget.i);
                         updateMPoints(model, claim.claim, claim.partnerName,
-                                claim.purchaseAmount)
+                                claim.purchaseAmount, claim.socialPoints)
                             .then((_) => Navigator.of(context)
                                 .pushAndRemoveUntil(
                                     MaterialPageRoute(
@@ -304,10 +304,11 @@ class _ClaimSummaryPageState extends State<ClaimSummaryPage> {
   }
 
   Future updateMPoints(MainModel model, int claim, String partnerName,
-      int purchaseAmount) async {
+      int purchaseAmount, int socialPoints) async {
     await Future.wait([
       model.updateMPoints(model.user.mpoints + claim),
       model.updateMPointsReceived(claim),
+      model.updateSocialPoints(socialPoints),
       model.addClaimToStatement(claim, partnerName, purchaseAmount)
     ]);
   }

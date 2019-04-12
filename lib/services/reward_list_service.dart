@@ -62,4 +62,9 @@ mixin RewardListService on Model {
     _selRewardIndex = index;
     notifyListeners();
   }
+
+  void clearRewardList() {
+    _rewardList.clear();
+    notifyListeners();
+  }
 }

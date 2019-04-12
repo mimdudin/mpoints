@@ -13,7 +13,7 @@ mixin NewsService on Model {
   bool _isLoadingNews = false;
   bool get isLoadingNews => _isLoadingNews;
 
-  int getRewardListCount() {
+  int getNewsListCount() {
     return _newsList.length;
   }
 
@@ -47,5 +47,10 @@ mixin NewsService on Model {
       notifyListeners();
       throw Exception('failed to load data');
     }
+  }
+
+  void clearNewsList() {
+    _newsList.clear();
+    notifyListeners();
   }
 }

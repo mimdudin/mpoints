@@ -34,8 +34,9 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   int _selectedDrawerIndex = 0;
+  List<FilterModel> _listFilter = [];
 
   _getDrawerItemWidget(int pos) {
     switch (pos) {
@@ -58,20 +59,24 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
+    loadData();
+
+    _listFilter.add(FilterModel("Redeem", false));
+    _listFilter.add(FilterModel("Claim", false));
+
     super.initState();
-    widget.auth.currentUser().then((val) {
-      loadData(val.uid);
-      print(val);
-    });
   }
 
-  Future loadData(String userId) async {
+  Future loadData() async {
     await Future.wait([
       widget.model.fetchNewsList(),
       widget.model.fetchRewardList(),
       widget.model.fetchPartnerList(),
       widget.model.fetchAds(),
-      widget.model.fetchUserById(userId),
+      widget.auth.currentUser().then((currentUser) {
+        widget.model.fetchUserById(currentUser.uid);
+        print(currentUser);
+      })
       // PermissionHandler().requestPermissions([PermissionGroup.camera])
     ]);
   }
@@ -104,17 +109,31 @@ class _HomeState extends State<Home> {
             actions: widget.drawerItems[_selectedDrawerIndex].title ==
                         Strings.home ||
                     widget.drawerItems[_selectedDrawerIndex].title ==
-                        Strings.termsAndPrivacyTOS
+                        Strings.termsAndPrivacyTOS ||
+                    model.getStatementsCount() == 0
                 ? <Widget>[]
                 : <Widget>[
+                    Builder(
+                        builder: (context) => IconButton(
+                              icon: Icon(Icons.search),
+                              onPressed: () async {
+                                // final Rewards rewards = await
+                                showSearch(
+                                    context: context,
+                                    delegate: DataSearchStatement(model));
+
+                                // Scaffold.of(context).showSnackBar(
+                                //     SnackBar(content: Text(rewards.name)));
+                              },
+                            )),
                     IconButton(
-                      icon: Icon(Icons.search),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.filter_list),
-                      onPressed: () {},
-                    ),
+                        icon: Icon(Icons.filter_list),
+                        onPressed: () => showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return ModalBottomSheet(_listFilter, model);
+                              },
+                            )),
                   ],
           ),
           drawer: Drawer(
@@ -155,7 +174,17 @@ class _HomeState extends State<Home> {
                 fontSize: 18, letterSpacing: 1, fontWeight: FontWeight.w400)),
         onTap: () {
           Navigator.of(context).pop();
-          _signOut();
+          _signOut().then((_) {
+            setState(() {
+              widget.model.clearAds();
+              widget.model.clearClaimList();
+              widget.model.clearNewsList();
+              widget.model.clearPartnerList();
+              widget.model.clearRewardList();
+              widget.model.clearUserList();
+              widget.model.clearStatementList();
+            });
+          });
           // Scaffold.of(context).showSnackBar(new SnackBar(
           //   content: new Text("Sign Out..."),
           // ));
@@ -246,7 +275,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void _signOut() async {
+  Future<void> _signOut() async {
     try {
       await widget.auth.signOut();
       widget.onSignedOut();
@@ -254,4 +283,154 @@ class _HomeState extends State<Home> {
       print("Error: $e");
     }
   }
+}
+
+class ModalBottomSheet extends StatefulWidget {
+  final List<FilterModel> listFilter;
+  final MainModel model;
+
+  ModalBottomSheet(this.listFilter, this.model);
+
+  @override
+  _ModalBottomSheetState createState() => _ModalBottomSheetState();
+}
+
+class _ModalBottomSheetState extends State<ModalBottomSheet>
+    with SingleTickerProviderStateMixin {
+  var _value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        SizedBox(height: 10),
+        Text(
+          "FILTER BY",
+          style: Theme.of(context)
+              .textTheme
+              .title
+              .copyWith(fontSize: 12, color: Colors.black45),
+        ),
+        SizedBox(height: 5),
+        Column(
+            children: widget.listFilter
+                .map((filter) => Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                      child: Row(
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                widget.listFilter.forEach(
+                                    (filter) => filter.isSelected = false);
+                                filter.isSelected = true;
+                                _value = filter.name;
+                              });
+                            },
+                            child: filter.isSelected
+                                ? Icon(
+                                    Icons.check_circle,
+                                    size: 28,
+                                    color: Pallete.primary,
+                                  )
+                                : Icon(
+                                    Icons.check_circle_outline,
+                                    size: 28,
+                                    color: Colors.grey,
+                                  ),
+                          ),
+                          SizedBox(width: 15),
+                          Text(
+                            filter.name,
+                            style: Theme.of(context)
+                                .textTheme
+                                .subtitle
+                                .copyWith(color: Pallete.primary, fontSize: 16),
+                          ),
+                        ],
+                      ),
+                    ))
+                .toList()),
+        Container(
+            margin: EdgeInsets.only(bottom: 10, right: 30),
+            alignment: Alignment.centerRight,
+            child: widget.model.status == ''
+                ? RaisedButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(100))),
+                    onPressed: () {
+                      setState(() {
+                        if (_value == 'Claim') {
+                          widget.model.setStatus('Claim');
+                        } else {
+                          widget.model.setStatus('Redeem');
+                        }
+                        Navigator.of(context).pop();
+                      });
+                    },
+                    color: Pallete.primary,
+                    child: Text("SAVE",
+                        style: Theme.of(context)
+                            .textTheme
+                            .button
+                            .copyWith(color: Colors.white)),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      RaisedButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(100))),
+                        onPressed: () {
+                          setState(() {
+                            _value = '';
+                            widget.model.setStatus('');
+                            widget.listFilter
+                                .forEach((filter) => filter.isSelected = false);
+                            Navigator.of(context).pop();
+                          });
+                        },
+                        color: Colors.red,
+                        child: Text("CLOSE FILTER",
+                            style: Theme.of(context)
+                                .textTheme
+                                .button
+                                .copyWith(color: Colors.white)),
+                      ),
+                      SizedBox(width: 10),
+                      RaisedButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(100))),
+                        onPressed: () {
+                          setState(() {
+                            if (_value == 'Claim') {
+                              widget.model.setStatus('Claim');
+                            } else {
+                              widget.model.setStatus('Redeem');
+                            }
+                            Navigator.of(context).pop();
+                          });
+                        },
+                        color: Pallete.primary,
+                        child: Text("SAVE",
+                            style: Theme.of(context)
+                                .textTheme
+                                .button
+                                .copyWith(color: Colors.white)),
+                      ),
+                    ],
+                  ))
+      ],
+    );
+  }
+}
+
+class FilterModel {
+  String name;
+  bool isSelected;
+  FilterModel(this.name, this.isSelected);
 }

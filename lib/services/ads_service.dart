@@ -36,4 +36,9 @@ mixin AdsService on Model {
       throw Exception('failed to load data');
     }
   }
+
+  void clearAds() {
+    _ads = null;
+    notifyListeners();
+  }
 }

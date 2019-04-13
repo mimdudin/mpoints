@@ -124,9 +124,9 @@ class _HomeFragmentState extends State<HomeFragment> {
                   Text(
                     model.isLoadingUser
                         ? '...'
-                        : model.user == null
+                        : model.user == null || model.user.mpoints == 0.1
                             ? "0"
-                            : "${model.user.socialPoints}",
+                            : "${model.format(model.user.socialPoints)}",
                     style: Theme.of(context)
                         .textTheme
                         .subhead
@@ -146,7 +146,9 @@ class _HomeFragmentState extends State<HomeFragment> {
                   Text(
                     model.isLoadingUser
                         ? '...'
-                        : model.user == null ? "0" : "${model.user.mpoints}",
+                        : model.user == null || model.user.mpoints == 0.1
+                            ? "0"
+                            : "${model.format(model.user.mpoints)}",
                     style: Theme.of(context)
                         .textTheme
                         .subhead
@@ -193,7 +195,9 @@ class _HomeFragmentState extends State<HomeFragment> {
           Text(
             model.isLoadingUser
                 ? '...'
-                : model.user == null ? "0" : "${model.user.mpoints}",
+                : model.user == null || model.user.mpoints == 0.1
+                    ? "0"
+                    : "${model.format(model.user.mpoints)}",
             style: Theme.of(context)
                 .textTheme
                 .title

@@ -178,10 +178,10 @@ class Auth implements BaseAuth {
       'photo': photo,
       'referredBy': referredBy == "" || referredBy == null ? "" : referredBy,
       'referrals': myReferral == "" || myReferral == null ? "" : myReferral,
-      'mpoints': 0,
+      'mpoints': 0.1,
       'mpointsUsed': 0,
-      'mpointsReceived': 0,
-      'social_points': 0,
+      'mpointsReceived': 0.1,
+      'social_points': 0.1,
       // 'statements': '',
     };
 

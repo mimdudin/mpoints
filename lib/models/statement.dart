@@ -1,7 +1,8 @@
 class Statement {
   String id;
   String partnerName, contra, rewardName, banner;
-  int timestamp, claim, purchaseAmount, rewardCost, rewardValue;
+  int timestamp, purchaseAmount, rewardCost, rewardValue;
+  double claim;
 
   Statement(
       {this.id,

@@ -15,8 +15,9 @@ void logError(String code, String message) =>
 
 class ClaimValidationPage extends StatefulWidget {
   final MainModel model;
+  final String purchaseAmount;
 
-  ClaimValidationPage(this.model);
+  ClaimValidationPage(this.model, this.purchaseAmount);
 
   @override
   _ClaimValidationPageState createState() => new _ClaimValidationPageState();
@@ -186,21 +187,28 @@ class _ClaimValidationPageState extends State<ClaimValidationPage>
         onPressed: () {
           setState(() {
             if (_partNumController.text.isNotEmpty) {
-              if (model.claimList
-                      .where((claim) =>
-                          claim.partnerNumber == _partNumController.text)
+              if (widget.model.partnerList
+                      .where(
+                          (partner) => partner.partnerNumber == _partnerNumber)
                       .toList()
                       .length >
                   0) {
                 _validate = false;
+
+                var mpoints = int.parse(widget.purchaseAmount) * 10 / 100;
+                print(mpoints.toString());
+
+                var socialPoints = int.parse(widget.purchaseAmount) * 1 / 100;
+                print(socialPoints.toString());
+
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) => ClaimSummaryPage(
-                            model.claimList
-                                .where((claim) =>
-                                    claim.partnerNumber == _partnerNumber)
-                                .toList())));
+                           int.parse(widget.purchaseAmount),
+                            mpoints,
+                            socialPoints,
+                            _partnerNumber)));
                 _partNumController.clear();
               } else {
                 _validate = false;
@@ -300,19 +308,27 @@ class _ClaimValidationPageState extends State<ClaimValidationPage>
   void onCodeRead(dynamic value) {
     print(value.toString());
     setState(() {
-      if (widget.model.claimList
-              .where((claim) => claim.partnerNumber == value.toString())
+      if (widget.model.partnerList
+              .where((partner) => partner.partnerNumber == value.toString())
               .toList()
               .length >
           0) {
         _validate = false;
+
+        var mpoints = int.parse(widget.purchaseAmount) * 10 / 100;
+        print(mpoints.toString());
+
+        var socialPoints = int.parse(widget.purchaseAmount) * 1 / 100;
+        print(socialPoints.toString());
+
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (BuildContext context) => ClaimSummaryPage(widget
-                    .model.claimList
-                    .where((claim) => claim.partnerNumber == value.toString())
-                    .toList())));
+                builder: (BuildContext context) => ClaimSummaryPage(
+                    widget.purchaseAmount,
+                    mpoints,
+                    socialPoints,
+                    value.toString())));
         _partNumController.clear();
       } else {
         _validate = false;

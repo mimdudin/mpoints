@@ -10,9 +10,12 @@ import '../../utils/strings.dart';
 import '../../utils/circular_loading.dart';
 
 class ClaimSummaryPage extends StatefulWidget {
-  final List<Claims> claimList;
+  // final List<Claims> claimList;
+  final String partnerNumber;
+  final mpoints, socialPoints, purchaseAmount;
 
-  ClaimSummaryPage(this.claimList);
+  ClaimSummaryPage(
+      this.purchaseAmount, this.mpoints, this.socialPoints, this.partnerNumber);
 
   @override
   _ClaimSummaryPageState createState() => _ClaimSummaryPageState();
@@ -23,14 +26,13 @@ class _ClaimSummaryPageState extends State<ClaimSummaryPage> {
   var _partnerPINController = TextEditingController();
   var _validate = false;
   // int _claim, _purchaseAmount;
-  String _partnerPIN;
-  // , _partnerName;
+  String _partnerPIN, _partnerId, _partnerName;
 
   @override
   void initState() {
     super.initState();
 
-    print(widget.claimList.length.toString());
+    // print(widget.claimList.length.toString());
   }
 
   @override
@@ -84,31 +86,38 @@ class _ClaimSummaryPageState extends State<ClaimSummaryPage> {
 
   Widget _buildPurchaseSumItem(MainModel model) {
     return Container(
-        child: ListView(
+        child: ListView.builder(
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
-            children: widget.claimList.map((claims) {
+            itemCount: model.partnerList
+                .where(
+                    (partner) => partner.partnerNumber == widget.partnerNumber)
+                .toList()
+                .length,
+            itemBuilder: (context, i) {
+              var partner = model.partnerList
+                  .where((partner) =>
+                      partner.partnerNumber == widget.partnerNumber)
+                  .toList()[i];
               // setState(() {
-              //   _claim = claims.claim;
-              //   _partnerName = claims.partnerName;
-              //   _purchaseAmount = claims.purchaseAmount;
+              _partnerId = partner.id;
+              _partnerName = partner.name;
               // });
               return Column(
                 children: <Widget>[
-                  _buildPurchaseLabelValue(
-                      Strings.partnerName, claims.partnerName),
+                  _buildPurchaseLabelValue(Strings.partnerName, partner.name),
                   SizedBox(height: 8),
                   _buildPurchaseLabelValue(
-                      Strings.purchaseAmount, "Rs. ${claims.purchaseAmount}"),
+                      Strings.purchaseAmount, "Rs. ${widget.purchaseAmount}"),
                   SizedBox(height: 8),
                   _buildPurchaseLabelValue(
-                      Strings.mpoints, "Mp. ${model.user?.mpoints}"),
+                      Strings.mpoints, "Mp. ${model.format(widget.mpoints)}"),
                   SizedBox(height: 8),
-                  _buildPurchaseLabelValue(
-                      Strings.socialPoints, "Sp. ${claims.socialPoints}"),
+                  _buildPurchaseLabelValue(Strings.socialPoints,
+                      "Sp. ${model.format(widget.socialPoints)}"),
                 ],
               );
-            }).toList()));
+            }));
   }
 
   Widget _buildPurchaseLabelValue(String label, String value) {
@@ -232,31 +241,37 @@ class _ClaimSummaryPageState extends State<ClaimSummaryPage> {
               onPressed: () {
                 setState(() {
                   if (_partnerPINController.text.isNotEmpty) {
-                    if (widget.claimList
-                            .where((claim) =>
-                                claim.employeePin == _partnerPINController.text)
-                            .toList()
-                            .length >
-                        0) {
-                      _validate = false;
+                    // if (model.partnerList
+                    //         .where((partner) =>
+                    //             partner.partnerNumber == _partnerPINController.text)
+                    //         .toList()
+                    //         .length >
+                    //     0) {
+                    _validate = false;
 
-                      for (var claim in widget.claimList) {
-                        //  model.selectedRewad(widget.i);
-                        updateMPoints(model, claim.claim, claim.partnerName,
-                                claim.purchaseAmount, claim.socialPoints)
-                            .then((_) => Navigator.of(context)
-                                .pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            ClaimSuccessPage(claim.claim)),
-                                    ModalRoute.withName('/main')));
-                      }
-                    } else {
-                      _validate = false;
+                    // for (var claim in widget.claimList) {
+                    //  model.selectedRewad(widget.i);
+                    updateMPoints(
+                            model,
+                            widget.mpoints,
+                            _partnerName,
+                            widget.purchaseAmount,
+                            widget.socialPoints,
+                            model.user.firstName + model.user.lastName ??
+                                "Unknown",
+                            _partnerId)
+                        .then((_) => Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    ClaimSuccessPage(widget.mpoints)),
+                            ModalRoute.withName('/main')));
+                    // }
+                    // } else {
+                    //   _validate = false;
 
-                      _buildAlert(context);
-                      _partnerPINController.clear();
-                    }
+                    //   _buildAlert(context);
+                    //   _partnerPINController.clear();
+                    // }
                   } else {
                     _validate = true;
                   }
@@ -268,6 +283,10 @@ class _ClaimSummaryPageState extends State<ClaimSummaryPage> {
       ),
     );
   }
+
+  // String format(double n) {
+  //   return n.toStringAsFixed(n.truncateToDouble() == n ? 0 : 2);
+  // }
 
   // Alert with single button.
   _buildAlert(context) {
@@ -303,13 +322,20 @@ class _ClaimSummaryPageState extends State<ClaimSummaryPage> {
         ));
   }
 
-  Future updateMPoints(MainModel model, int claim, String partnerName,
-      int purchaseAmount, int socialPoints) async {
+  Future updateMPoints(
+      MainModel model,
+      double claim,
+      String partnerName,
+      int purchaseAmount,
+      double socialPoints,
+      String user,
+      String partnerId) async {
     await Future.wait([
       model.updateMPoints(model.user.mpoints + claim),
       model.updateMPointsReceived(claim),
       model.updateSocialPoints(socialPoints),
-      model.addClaimToStatement(claim, partnerName, purchaseAmount)
+      model.addClaimToStatement(claim, partnerName, purchaseAmount),
+      model.addClaimToPartner(claim, purchaseAmount, user, partnerId),
     ]);
   }
 }

@@ -1,7 +1,7 @@
 class Partners {
   String id, name, category;
   String logo, email, facebook;
-  String phoneNumber, website;
+  String phoneNumber, website, partnerNumber;
   bool isNewest, isPopular;
 
   Partners(
@@ -12,6 +12,7 @@ class Partners {
       this.email,
       this.facebook,
       this.phoneNumber,
+      this.partnerNumber,
       this.website,
       this.isNewest,
       this.isPopular});
@@ -25,6 +26,7 @@ class Partners {
         email: json['email'],
         facebook: json['facebook'],
         phoneNumber: json['phone_number'],
+        partnerNumber: json['partner_number'],
         website: json['website'],
         isNewest: json['isNewest'],
         isPopular: json['isPopular']);

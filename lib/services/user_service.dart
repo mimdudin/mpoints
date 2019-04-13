@@ -13,7 +13,7 @@ mixin UserService on Model, RewardListService {
   User _user = new User();
   User get user => _user;
 
-  String _status = "";
+  String _status = "Claim & Redeem";
   String get status => _status;
 
   List<Statement> _statementList = [];
@@ -28,6 +28,8 @@ mixin UserService on Model, RewardListService {
       return List.from(_statementList
           .where((statement) => statement.rewardName != null)
           .toList());
+    } else if (_status == 'Claim & Redeem') {
+      return List.from(_statementList);
     }
     return List.from(_statementList);
   }
@@ -88,7 +90,7 @@ mixin UserService on Model, RewardListService {
     }
   }
 
-  Future<void> updateMPoints(int mpoints) async {
+  Future<void> updateMPoints(double mpoints) async {
     _isLoadingUser = true;
     notifyListeners();
 
@@ -154,7 +156,7 @@ mixin UserService on Model, RewardListService {
     notifyListeners();
   }
 
-  Future<void> updateMPointsReceived(int claim) async {
+  Future<void> updateMPointsReceived(double claim) async {
     _isLoadingUser = true;
     notifyListeners();
 
@@ -187,7 +189,7 @@ mixin UserService on Model, RewardListService {
     notifyListeners();
   }
 
-  Future<void> updateSocialPoints(int socialPoints) async {
+  Future<void> updateSocialPoints(double socialPoints) async {
     _isLoadingUser = true;
     notifyListeners();
 
@@ -271,7 +273,7 @@ mixin UserService on Model, RewardListService {
   }
 
   Future addClaimToStatement(
-      int claim, String partnerName, int purchaseAmount) async {
+      double claim, String partnerName, int purchaseAmount) async {
     final timestamp = DateTime.now().toUtc().millisecondsSinceEpoch;
     print(timestamp.toString());
 
@@ -317,7 +319,52 @@ mixin UserService on Model, RewardListService {
     }
   }
 
+  Future addClaimToPartner(
+      double claim, int purchaseAmount, String user, String partnerId) async {
+    final timestamp = DateTime.now().toUtc().millisecondsSinceEpoch;
+    print(timestamp.toString());
+
+    _isLoadingUser = true;
+    notifyListeners();
+
+    final Map<String, dynamic> statementData = {
+      'claim': claim,
+      'contra': "Unknown",
+      'timestamp': timestamp,
+      'purchase_amount': purchaseAmount,
+      'user': user,
+    };
+
+    try {
+      final http.Response response = await http.post(
+          Constant.baseUrl + '/partners/$partnerId/claims' + Constant.jsonExt,
+          body: json.encode(statementData));
+
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      print(responseData);
+
+      // final Statement newStatement = Statement(
+      //     id: responseData['name'],
+      //     claim: claim,
+      //     contra: "Unknown",
+      //     timestamp: timestamp,
+      //     partnerName: partnerName,
+      //     purchaseAmount: purchaseAmount);
+
+      // _statementList.add(newStatement);
+
+      _isLoadingUser = false;
+      notifyListeners();
+    } catch (error) {
+      _isLoadingUser = false;
+      notifyListeners();
+      throw Exception('failed to load data');
+    }
+  }
+
   Future<List<Statement>> fetchStatements(String uid) async {
+    final List<Statement> _fetchedClaims = [];
+
     // _isLoadingClaim = true;
     // notifyListeners();
 
@@ -328,8 +375,6 @@ mixin UserService on Model, RewardListService {
         values = new Map<String, dynamic>.from(snap.value);
         print(values);
       }
-
-      final List<Statement> _fetchedClaims = [];
 
       if (values != null) {
         values.forEach((key, data) {
@@ -359,5 +404,9 @@ mixin UserService on Model, RewardListService {
   void clearStatementList() {
     _statementList.clear();
     notifyListeners();
+  }
+
+  String format(double n) {
+    return n?.toStringAsFixed(n?.truncateToDouble() == n ? 0 : 2);
   }
 }

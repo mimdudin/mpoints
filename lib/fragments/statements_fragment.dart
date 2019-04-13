@@ -47,19 +47,21 @@ class _StatementFragmentState extends State<StatementFragment> {
                             : ListView.builder(
                                 itemCount: model.statementList == null
                                     ? 0
-                                    : model.status == 'Claim'
-                                        ? model.statementList
-                                            .where((statement) =>
-                                                statement.claim != null)
-                                            .toList()
-                                            .length
-                                        : model.statementList
+                                    : model.status == 'Claim & Redeem'
+                                        ? model.getStatementsCount()
+                                        : model.status == 'Claim'
+                                            ? model.statementList
                                                 .where((statement) =>
-                                                    statement.rewardName !=
-                                                    null)
+                                                    statement.claim != null)
                                                 .toList()
-                                                .length ??
-                                            model.getStatementsCount(),
+                                                .length
+                                            : model.statementList
+                                                    .where((statement) =>
+                                                        statement.rewardName !=
+                                                        null)
+                                                    .toList()
+                                                    .length ??
+                                                model.getStatementsCount(),
                                 itemBuilder: (context, i) {
                                   var statement = model.statementList[i];
                                   return statement.claim != null
@@ -86,7 +88,9 @@ class _StatementFragmentState extends State<StatementFragment> {
           Text(
             model.isLoadingUser
                 ? '...'
-                : model.user == null ? "0" : "${model.user.mpoints}",
+                : model.user == null || model.user.mpoints == 0.1
+                    ? "0"
+                    : "${model.format(model.user.mpoints)}",
             style: Theme.of(context).textTheme.subhead.copyWith(
                 fontSize: 15,
                 color: Pallete.primary,
@@ -111,7 +115,9 @@ class _StatementFragmentState extends State<StatementFragment> {
           Text(
             model.isLoadingUser
                 ? '...'
-                : model.user == null ? "0" : "${model.user.mpointsReceived}",
+                : model.user == null || model.user.mpoints == 0.1
+                    ? "0"
+                    : "${model.format(model.user.mpointsReceived)}",
             style: Theme.of(context).textTheme.subhead.copyWith(
                 fontSize: 15,
                 color: Pallete.primary,
@@ -316,7 +322,9 @@ class BuildStatementClaim extends StatelessWidget {
                       padding: EdgeInsets.only(bottom: 10),
                       // color: Colors.lightGreen,
                       child: Text(
-                        statement == null ? "0" : "${statement.claim}",
+                        statement == null
+                            ? "0"
+                            : "${model.format(statement.claim)}",
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.subtitle.copyWith(
                               fontSize: 20,

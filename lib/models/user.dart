@@ -4,7 +4,8 @@ class User {
   String uid, firstName, lastName;
   String email, phoneNumber, photo;
   String referredBy, myReferral;
-  int mpoints, mpointsUsed, mpointsReceived, socialPoints;
+  int mpointsUsed;
+  double mpoints, mpointsReceived, socialPoints;
   List<Statement> statementList;
 
   User(

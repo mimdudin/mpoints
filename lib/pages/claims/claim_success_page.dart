@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ClaimSuccessPage extends StatefulWidget {
-  final int claim;
+  final claim;
 
   ClaimSuccessPage(this.claim);
 

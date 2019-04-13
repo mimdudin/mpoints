@@ -183,6 +183,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               widget.model.clearRewardList();
               widget.model.clearUserList();
               widget.model.clearStatementList();
+              widget.model.setStatus('Claim & Redeem');
             });
           });
           // Scaffold.of(context).showSnackBar(new SnackBar(
@@ -356,7 +357,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet>
         Container(
             margin: EdgeInsets.only(bottom: 10, right: 30),
             alignment: Alignment.centerRight,
-            child: widget.model.status == ''
+            child: widget.model.status == 'Claim & Redeem'
                 ? RaisedButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(100))),
@@ -387,7 +388,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet>
                         onPressed: () {
                           setState(() {
                             _value = '';
-                            widget.model.setStatus('');
+                            widget.model.setStatus('Claim & Redeem');
                             widget.listFilter
                                 .forEach((filter) => filter.isSelected = false);
                             Navigator.of(context).pop();

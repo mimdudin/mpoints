@@ -40,6 +40,7 @@ mixin PartnerListService on Model {
           email: json['email'],
           facebook: json['facebook'],
           phoneNumber: json['phone_number'],
+          partnerNumber: json['partner_number'],
           website: json['website'],
           isNewest: json['isNewest'],
           isPopular: json['isPopular'],
@@ -60,7 +61,7 @@ mixin PartnerListService on Model {
     }
   }
 
-    void clearPartnerList() {
+  void clearPartnerList() {
     _partnerList.clear();
     notifyListeners();
   }

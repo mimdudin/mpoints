@@ -15,7 +15,7 @@ class ClaimPointsPage extends StatefulWidget {
 
 class _ClaimPointsPageState extends State<ClaimPointsPage> {
   var _purchaseController = TextEditingController();
-  String _partnerNumber;
+  String _purchaseAmount;
   bool _validate = false;
 
   @override
@@ -92,7 +92,7 @@ class _ClaimPointsPageState extends State<ClaimPointsPage> {
         keyboardType: TextInputType.number,
         onChanged: (String v) {
           setState(() {
-            _partnerNumber = v;
+            _purchaseAmount = v;
             print(v);
           });
         },
@@ -130,32 +130,28 @@ class _ClaimPointsPageState extends State<ClaimPointsPage> {
                   if (_purchaseController.text.isNotEmpty) {
                     _validate = false;
 
-                    model
-                        .fetchAvailableClaims(
-                            int.parse(_purchaseController.text))
-                        .then((_) {
-                      _validate = false;
+                    // model
+                    //     .fetchAvailableClaims(
+                    //         int.parse(_purchaseController.text))
+                    //     .then((_) {
+                    //   _validate = false;
 
-                      if (model.claimList.length > 0 &&
-                          model.claimList != null) {
-                        // Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (BuildContext context) =>
-                        //             RedeemSummaryPage(widget.rewards, widget.i)));
+                    //   if (model.claimList.length > 0 &&
+                    //       model.claimList != null) {
 
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    ClaimValidationPage(model)));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                ClaimValidationPage(model, _purchaseAmount)));
 
-                        _purchaseController.clear();
-                      } else {
-                        _buildAlert(context);
-                        _purchaseController.clear();
-                      }
-                    });
+                    _purchaseController.clear();
+                    //   } else {
+                    //     _buildAlert(context);
+                    //     _purchaseController.clear();
+                    //   }
+                    // });
+
                   } else {
                     _validate = true;
                   }

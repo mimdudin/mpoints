@@ -404,16 +404,19 @@ class BuildStatementReward extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Container(
-                      padding: EdgeInsets.only(bottom: 10),
+                      margin: EdgeInsets.only(bottom: 10),
+                      padding: EdgeInsets.all(5),
                       // color: Colors.lightGreen,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(50)),
+                        color: Colors.green,
+                      ),
                       child: Text(
-                        statement == null ? "0" : "${statement.rewardValue}",
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.subtitle.copyWith(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black87,
-                            ),
+                        "SUCCESS",
+                        style: Theme.of(context)
+                            .textTheme
+                            .title
+                            .copyWith(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     )
                   ],

@@ -236,7 +236,6 @@ mixin UserService on Model, RewardListService {
       'partner_name': getSelectedReward.partnerName,
       'reward_cost': rewardCost,
       'reward_name': getSelectedReward.name,
-      'reward_value': getSelectedReward.rewardValue
     };
 
     try {
@@ -258,8 +257,7 @@ mixin UserService on Model, RewardListService {
           timestamp: timestamp,
           partnerName: getSelectedReward.partnerName,
           rewardCost: rewardCost,
-          rewardName: getSelectedReward.name,
-          rewardValue: getSelectedReward.rewardValue);
+          rewardName: getSelectedReward.name);
 
       _statementList.add(newStatement);
 
@@ -338,6 +336,52 @@ mixin UserService on Model, RewardListService {
     try {
       final http.Response response = await http.post(
           Constant.baseUrl + '/partners/$partnerId/claims' + Constant.jsonExt,
+          body: json.encode(statementData));
+
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      print(responseData);
+
+      // final Statement newStatement = Statement(
+      //     id: responseData['name'],
+      //     claim: claim,
+      //     contra: "Unknown",
+      //     timestamp: timestamp,
+      //     partnerName: partnerName,
+      //     purchaseAmount: purchaseAmount);
+
+      // _statementList.add(newStatement);
+
+      _isLoadingUser = false;
+      notifyListeners();
+    } catch (error) {
+      _isLoadingUser = false;
+      notifyListeners();
+      throw Exception('failed to load data');
+    }
+  }
+
+  Future addRedeemToPartner(String banner, String partnerName, int rewardCost,
+      String rewardName, String partnerId, String user) async {
+    final timestamp = DateTime.now().toUtc().millisecondsSinceEpoch;
+    print(timestamp.toString());
+
+    _isLoadingUser = true;
+    notifyListeners();
+
+    final Map<String, dynamic> statementData = {
+      'banner': banner,
+      'contra': "Unknown",
+      'timestamp': timestamp,
+      'reward_cost': rewardCost,
+      'reward_name': rewardName,
+      'user': user,
+    };
+
+    try {
+      final http.Response response = await http.post(
+          Constant.baseUrl +
+              '/partners/$partnerId/redeem_request' +
+              Constant.jsonExt,
           body: json.encode(statementData));
 
       final Map<String, dynamic> responseData = json.decode(response.body);

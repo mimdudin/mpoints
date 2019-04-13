@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+import 'dart:math' as Math;
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 class ClaimSuccessPage extends StatefulWidget {
   final claim;
@@ -10,29 +18,33 @@ class ClaimSuccessPage extends StatefulWidget {
 }
 
 class _ClaimSuccessPageState extends State<ClaimSuccessPage> {
+  static GlobalKey previewContainer = new GlobalKey();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Container(
-            child: ListView(
-      children: <Widget>[
-        SizedBox(height: 20),
-        _buildLogo(),
-        SizedBox(height: 40),
-        Column(
+    return RepaintBoundary(
+        key: previewContainer,
+        child: Scaffold(
+            body: Container(
+                child: ListView(
           children: <Widget>[
-            _buildSomeText("Congratulations!!!", 24),
-            SizedBox(height: 10),
-            _buildSomeText("You got ${widget.claim} Mpoints.", 14),
-            SizedBox(height: 60),
-            _buildSuccessIcon(),
-            SizedBox(height: 30),
-            _buildHomeCaptureBtn(),
-            SizedBox(height: 25),
+            SizedBox(height: 20),
+            _buildLogo(),
+            SizedBox(height: 40),
+            Column(
+              children: <Widget>[
+                _buildSomeText("Congratulations!!!", 24),
+                SizedBox(height: 10),
+                _buildSomeText("You got ${widget.claim} Mpoints.", 14),
+                SizedBox(height: 60),
+                _buildSuccessIcon(),
+                SizedBox(height: 30),
+                _buildHomeCaptureBtn(),
+                SizedBox(height: 25),
+              ],
+            )
           ],
-        )
-      ],
-    )));
+        ))));
   }
 
   Widget _buildSuccessIcon() {
@@ -117,7 +129,7 @@ class _ClaimSuccessPageState extends State<ClaimSuccessPage> {
                     .copyWith(fontSize: 16, color: Colors.white),
               ),
               color: Color(0xffAD8D0B),
-              onPressed: () {},
+              onPressed: takeScreenShot,
             ),
           )
         ],
@@ -136,5 +148,19 @@ class _ClaimSuccessPageState extends State<ClaimSuccessPage> {
           ),
           onPressed: () => Navigator.pop(context),
         ));
+  }
+
+  takeScreenShot() async {
+    int rand = new Math.Random().nextInt(10000);
+    RenderRepaintBoundary boundary =
+        previewContainer.currentContext.findRenderObject();
+    ui.Image image = await boundary.toImage();
+    final directory = (await getApplicationDocumentsDirectory()).path;
+    ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    Uint8List pngBytes = byteData.buffer.asUint8List();
+    print(pngBytes);
+
+    File imgFile = new File('$directory/Mp_$rand.png');
+    imgFile.writeAsBytes(pngBytes);
   }
 }

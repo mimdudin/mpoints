@@ -65,9 +65,9 @@ class _RedeemSummaryPageState extends State<RedeemSummaryPage> {
                 _buildRedeemLabelValue(
                     Strings.rewardName, widget.rewards?.name ?? "Unknown"),
                 SizedBox(height: 8),
-                _buildRedeemLabelValue(Strings.rewardValue,
-                    "Rs. ${widget.rewards?.rewardValue}" ?? "Rs. 0"),
-                SizedBox(height: 8),
+                // _buildRedeemLabelValue(Strings.rewardValue,
+                //     "Rs. ${widget.rewards?.rewardValue}" ?? "Rs. 0"),
+                // SizedBox(height: 8),
                 _buildRedeemLabelValue(
                     Strings.mpBalance, "Mp. ${model.user?.mpoints}" ?? "Mp. 0"),
                 SizedBox(height: 8),
@@ -205,8 +205,7 @@ class _RedeemSummaryPageState extends State<RedeemSummaryPage> {
               color: Pallete.primary,
               onPressed: () {
                 setState(() {
-                  if (_partnerPINController.text ==
-                      widget.rewards.employeePin) {
+                  if (_partnerPINController.text.isNotEmpty) {
                     _validate = false;
                     model.selectedRewad(widget.i);
                     updateMPoints(model, widget.rewards.rewardCost).then((_) =>
@@ -215,15 +214,16 @@ class _RedeemSummaryPageState extends State<RedeemSummaryPage> {
                                 builder: (BuildContext context) =>
                                     RedeemSuccessPage(widget.rewards?.name)),
                             ModalRoute.withName('/main')));
-                  } else if (_partnerPINController.text.isEmpty) {
+                  } else {
                     _validate = true;
-                  } else if (_partnerPINController.text !=
-                      widget.rewards.partnerNumber) {
-                    _validate = false;
-
-                    _buildAlert(context);
-                    _partnerPINController.clear();
                   }
+                  // else if (_partnerPINController.text !=
+                  //     widget.rewards.partnerNumber) {
+                  //   _validate = false;
+
+                  //   _buildAlert(context);
+                  //   _partnerPINController.clear();
+                  // }
                 });
               },
             ),
@@ -250,7 +250,14 @@ class _RedeemSummaryPageState extends State<RedeemSummaryPage> {
     await Future.wait([
       model.updateMPoints(model.user.mpoints - rewardCost),
       model.updateMPointsUsed(rewardCost),
-      model.addRedeemToStatement(rewardCost)
+      model.addRedeemToStatement(rewardCost),
+      model.addRedeemToPartner(
+          widget.rewards?.banner,
+          widget.rewards?.partnerName,
+          rewardCost,
+          widget.rewards?.name,
+          widget.rewards?.partnerId,
+          "${model.user?.firstName} ${model.user?.lastName}" ?? "Unknown"),
     ]);
   }
 }

@@ -1,6 +1,6 @@
 class Rewards {
   String id, name, banner, category;
-  String description, email, employeePin;
+  String description, email, partnerId;
   String facebook, website, phoneNumber;
   int discount, rewardValue, rewardCost;
   String partnerName, partnerNumber;
@@ -12,7 +12,7 @@ class Rewards {
     this.category,
     this.description,
     this.email,
-    this.employeePin,
+    this.partnerId,
     this.facebook,
     this.website,
     this.phoneNumber,
@@ -31,7 +31,7 @@ class Rewards {
       category: json['category'],
       description: json['description'],
       email: json['email'],
-      employeePin: json['employee_pin'],
+      partnerId: json['partnerId'],
       facebook: json['facebook'],
       website: json['website'],
       phoneNumber: json['phone_number'],

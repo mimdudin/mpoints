@@ -257,7 +257,7 @@ class _ClaimSummaryPageState extends State<ClaimSummaryPage> {
                             _partnerName,
                             widget.purchaseAmount,
                             widget.socialPoints,
-                            model.user.firstName + model.user.lastName ??
+                            model.user.firstName + " " + model.user.lastName ??
                                 "Unknown",
                             _partnerId)
                         .then((_) => Navigator.of(context).pushAndRemoveUntil(

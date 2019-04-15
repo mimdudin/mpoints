@@ -133,6 +133,9 @@ class _LoginPageState extends State<LoginPage> {
       if (e.code == 'ERROR_WRONG_PASSWORD') {
         showInSnackBar(Strings.errorEmailPass);
         print(e.code);
+      } else if (e.code == 'ERROR_USER_NOT_FOUND') {
+        showInSnackBar(Strings.errorNotUser);
+        print(e.code);
       }
       setState(() {
         _isLoading = false;

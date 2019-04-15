@@ -93,12 +93,12 @@ class _ProfilePageState extends State<ProfilePage> {
               _buildProfileLabel(Strings.myId),
               SizedBox(height: 10),
               _buildQRCode(),
-              SizedBox(height: 10),
-              _buildProfileLabel(Strings.phoneNumber),
-              _buildPhoneNumber(model),
-              SizedBox(height: 10),
-              _buildProfileLabel(Strings.referrals),
-              _buildReferrals(model),
+              // SizedBox(height: 10),
+              // _buildProfileLabel(Strings.phoneNumber),
+              // _buildPhoneNumber(model),
+              // SizedBox(height: 10),
+              // _buildProfileLabel(Strings.referrals),
+              // _buildReferrals(model),
               SizedBox(height: 25),
             ],
           )),
@@ -176,11 +176,11 @@ class _ProfilePageState extends State<ProfilePage> {
           height: 120,
           width: 120,
         ),
-        SizedBox(height: 3),
-        Text(
-          "MPU00001",
-          style: Theme.of(context).textTheme.caption.copyWith(fontSize: 16),
-        )
+        // SizedBox(height: 3),
+        // Text(
+        //   "MPU00001",
+        //   style: Theme.of(context).textTheme.caption.copyWith(fontSize: 16),
+        // )
       ],
     ));
   }

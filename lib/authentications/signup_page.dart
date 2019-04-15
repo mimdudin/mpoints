@@ -279,11 +279,11 @@ class _SignupPageState extends State<SignupPage> {
                 return Strings.invalidPhoneNumber;
               }
             },
-            inputFormatters: <TextInputFormatter>[
-              WhitelistingTextInputFormatter.digitsOnly,
-              // Fit the validating format.
-              _phoneNumberFormatter,
-            ],
+            // inputFormatters: <TextInputFormatter>[
+            //   WhitelistingTextInputFormatter.digitsOnly,
+            //   // Fit the validating format.
+            //   _phoneNumberFormatter,
+            // ],
             onSaved: (value) => _phoneNumber = value,
           ),
         ));

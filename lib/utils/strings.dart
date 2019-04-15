@@ -79,6 +79,7 @@ class Strings {
   //login page
   static String signIn = "SIGN IN";
   static String errorEmailPass = "Invalid your Email or Password.";
+  static String errorNotUser = "Your email and password currently not registered.";
   static String email = "Email";
   static String hintEmail = "enter your email";
   static String enterValidEmail = "Please enter a valid email";

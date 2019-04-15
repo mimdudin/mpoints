@@ -39,12 +39,16 @@ dependencies:
   rflutter_alert: ^1.0.2
   carousel_slider: ^1.3.0
   url_launcher: ^5.0.2
+  flutter_launcher_icons: ^0.7.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-
+flutter_icons:
+  android: true 
+  ios: true
+  image_path: "assets/images/logo/logo_v1.png"
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
 
@@ -64,6 +68,7 @@ flutter:
    - assets/images/acer.jpg
    - assets/images/logo/logo_v1.png
    - assets/images/logo/logo_v2.png
+   - assets/images/logo/launcher_icon.png
    - assets/images/qrcode.jpg
    - assets/images/QR.png
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import './models/drawer_item.dart';
 import './fragments/statements_fragment.dart';
@@ -142,6 +142,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 _buildProfileBanner(model),
                 Column(children: drawerOptions),
                 // Divider(height: 0),
+                _buildFacebook(),
+                _buildWebsite(),
+                _buildEmail(model),
                 _buildSignOut(),
                 // Divider(height: 0)
               ],
@@ -190,6 +193,54 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           //   content: new Text("Sign Out..."),
           // ));
         });
+  }
+
+  Widget _buildFacebook() {
+    return ListTile(
+        // contentPadding: EdgeInsets.only(left: 73.5, right: 15),
+        leading: Container(
+            padding: EdgeInsets.only(left: 4.0),
+            child: Icon(FontAwesomeIcons.facebook,
+                color: Pallete.primary, size: 28)),
+        title: Text('Facebook',
+            style: TextStyle(
+                fontSize: 18, letterSpacing: 1, fontWeight: FontWeight.w400)),
+        onTap: () => _launchURL('http://facebook.com'));
+  }
+
+  Widget _buildWebsite() {
+    return ListTile(
+        // contentPadding: EdgeInsets.only(left: 73.5, right: 15),
+        leading: Container(
+            padding: EdgeInsets.only(left: 4.0),
+            child: Icon(Icons.language, color: Pallete.primary, size: 28)),
+        title: Text('Website',
+            style: TextStyle(
+                fontSize: 18, letterSpacing: 1, fontWeight: FontWeight.w400)),
+        onTap: () => _launchURL('http://google.com'));
+  }
+
+  void _launchURL(String urlAds) async {
+    String url = urlAds;
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  Widget _buildEmail(MainModel model) {
+    return ListTile(
+        // contentPadding: EdgeInsets.only(left: 73.5, right: 15),
+        leading: Container(
+            padding: EdgeInsets.only(left: 4.0),
+            child: Icon(Icons.email, color: Pallete.primary, size: 28)),
+        title: Text('Email',
+            style: TextStyle(
+                fontSize: 18, letterSpacing: 1, fontWeight: FontWeight.w400)),
+        onTap: () => model.isLoadingUser
+            ? {}
+            : launch('mailto:${model.user.email}?subject=Support'));
   }
 
   Widget _buildProfileBanner(MainModel model) {

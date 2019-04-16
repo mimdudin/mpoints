@@ -68,8 +68,8 @@ class _RedeemSummaryPageState extends State<RedeemSummaryPage> {
                 // _buildRedeemLabelValue(Strings.rewardValue,
                 //     "Rs. ${widget.rewards?.rewardValue}" ?? "Rs. 0"),
                 // SizedBox(height: 8),
-                _buildRedeemLabelValue(
-                    Strings.mpBalance, "Mp. ${model.user?.mpoints}" ?? "Mp. 0"),
+                _buildRedeemLabelValue(Strings.mpBalance,
+                    "Mp. ${model.format(model.user.mpoints)}" ?? "Mp. 0"),
                 SizedBox(height: 8),
                 _buildRedeemLabelValue(Strings.rewardCost,
                     "Mp. ${widget.rewards?.rewardCost}" ?? "Rs. 0"),
@@ -193,7 +193,7 @@ class _RedeemSummaryPageState extends State<RedeemSummaryPage> {
             child: RaisedButton(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(100))),
-              child: model.isLoadingUser
+              child: model.isLoadingEmployee || model.isLoadingUser
                   ? LoadingCircular10()
                   : Text(
                       Strings.finish,
@@ -206,24 +206,31 @@ class _RedeemSummaryPageState extends State<RedeemSummaryPage> {
               onPressed: () {
                 setState(() {
                   if (_partnerPINController.text.isNotEmpty) {
-                    _validate = false;
-                    model.selectedRewad(widget.i);
-                    updateMPoints(model, widget.rewards.rewardCost).then((_) =>
-                        Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    RedeemSuccessPage(widget.rewards?.name)),
-                            ModalRoute.withName('/main')));
+                    model
+                        .fetchAvailableEmployee(widget.rewards.partnerId,
+                            _partnerPINController.text)
+                        .then((_) {
+                      if (model.employeeList.length > 0 &&
+                          model.employeeList != null) {
+                        _validate = false;
+                        model.selectedRewad(widget.i);
+                        updateMPoints(model, widget.rewards.rewardCost).then(
+                            (_) => Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        RedeemSuccessPage(
+                                            widget.rewards?.name)),
+                                ModalRoute.withName('/main')));
+                      } else {
+                        _validate = false;
+
+                        _buildAlert(context);
+                        _partnerPINController.clear();
+                      }
+                    });
                   } else {
                     _validate = true;
                   }
-                  // else if (_partnerPINController.text !=
-                  //     widget.rewards.partnerNumber) {
-                  //   _validate = false;
-
-                  //   _buildAlert(context);
-                  //   _partnerPINController.clear();
-                  // }
                 });
               },
             ),

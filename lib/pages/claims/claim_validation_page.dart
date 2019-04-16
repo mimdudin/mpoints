@@ -195,19 +195,19 @@ class _ClaimValidationPageState extends State<ClaimValidationPage>
                   0) {
                 _validate = false;
 
-                var mpoints = int.parse(widget.purchaseAmount) * 10 / 100;
-                print(mpoints.toString());
+                // var mpoints = int.parse(widget.purchaseAmount) * 10 / 100;
+                // print(mpoints.toString());
 
-                var socialPoints = int.parse(widget.purchaseAmount) * 1 / 100;
-                print(socialPoints.toString());
+                // var socialPoints = int.parse(widget.purchaseAmount) * 1 / 100;
+                // print(socialPoints.toString());
 
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) => ClaimSummaryPage(
-                           int.parse(widget.purchaseAmount),
-                            mpoints,
-                            socialPoints,
+                            int.parse(widget.purchaseAmount),
+                            // mpoints,
+                            // socialPoints,
                             _partnerNumber)));
                 _partNumController.clear();
               } else {
@@ -315,19 +315,19 @@ class _ClaimValidationPageState extends State<ClaimValidationPage>
           0) {
         _validate = false;
 
-        var mpoints = int.parse(widget.purchaseAmount) * 10 / 100;
-        print(mpoints.toString());
+        // var mpoints = int.parse(widget.purchaseAmount) * 10 / 100;
+        // print(mpoints.toString());
 
-        var socialPoints = int.parse(widget.purchaseAmount) * 1 / 100;
-        print(socialPoints.toString());
+        // var socialPoints = int.parse(widget.purchaseAmount) * 1 / 100;
+        // print(socialPoints.toString());
 
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (BuildContext context) => ClaimSummaryPage(
-                    widget.purchaseAmount,
-                    mpoints,
-                    socialPoints,
+                    int.parse(widget.purchaseAmount),
+                    // mpoints,
+                    // socialPoints,
                     value.toString())));
         _partNumController.clear();
       } else {

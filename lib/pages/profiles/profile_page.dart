@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../utils/circular_loading.dart';
 import '../../utils/strings.dart';
@@ -92,7 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               _buildProfileLabel(Strings.myId),
               SizedBox(height: 10),
-              _buildQRCode(),
+              _buildQRCode(model),
               // SizedBox(height: 10),
               // _buildProfileLabel(Strings.phoneNumber),
               // _buildPhoneNumber(model),
@@ -167,22 +168,36 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildQRCode() {
+  Widget _buildQRCode(MainModel model) {
     return Container(
-        child: Column(
-      children: <Widget>[
-        Image.asset(
-          "assets/images/qrcode.jpg",
-          height: 120,
-          width: 120,
-        ),
+      alignment: Alignment.center,
+        height: 120,
+        width: 120,
+        child: QrImage(
+            data: model.user.uid,
+            gapless: false,
+            foregroundColor: const Color(0xFF111111),
+            onError: (dynamic ex) {
+              print('[QR] ERROR - $ex');
+              // setState(() {
+              //   _inputErrorText =
+              //       'Error! Maybe your input value is too long?';
+            })
+        //   Column(
+        // children: <Widget>[
+        //   Image.asset(
+        //     "assets/images/qrcode.jpg",
+        //     height: 120,
+        //     width: 120,
+        //   ),
         // SizedBox(height: 3),
         // Text(
         //   "MPU00001",
         //   style: Theme.of(context).textTheme.caption.copyWith(fontSize: 16),
         // )
-      ],
-    ));
+        //   ],
+        // )
+        );
   }
 
   Widget _buildProfileLabel(String label) {

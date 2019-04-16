@@ -5,8 +5,10 @@ import 'dart:ui' as ui;
 import 'dart:math' as Math;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 class ClaimSuccessPage extends StatefulWidget {
   final claim;
@@ -18,33 +20,42 @@ class ClaimSuccessPage extends StatefulWidget {
 }
 
 class _ClaimSuccessPageState extends State<ClaimSuccessPage> {
-  static GlobalKey previewContainer = new GlobalKey();
+  static GlobalKey _globalKey = new GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    PermissionHandler().requestPermissions([PermissionGroup.storage]);
+    // PermissionHandler().requestPermissions(<PermissionGroup>[
+    //   PermissionGroup.storage, // 在这里添加需要的权限
+    // ]);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-        key: previewContainer,
-        child: Scaffold(
-            body: Container(
+    return Scaffold(
+        body: Container(
+            child: RepaintBoundary(
+                key: _globalKey,
                 child: ListView(
-          children: <Widget>[
-            SizedBox(height: 20),
-            _buildLogo(),
-            SizedBox(height: 40),
-            Column(
-              children: <Widget>[
-                _buildSomeText("Congratulations!!!", 24),
-                SizedBox(height: 10),
-                _buildSomeText("You got ${widget.claim} Mpoints.", 14),
-                SizedBox(height: 60),
-                _buildSuccessIcon(),
-                SizedBox(height: 30),
-                _buildHomeCaptureBtn(),
-                SizedBox(height: 25),
-              ],
-            )
-          ],
-        ))));
+                  children: <Widget>[
+                    SizedBox(height: 20),
+                    _buildLogo(),
+                    SizedBox(height: 40),
+                    Column(
+                      children: <Widget>[
+                        _buildSomeText("Congratulations!!!", 24),
+                        SizedBox(height: 10),
+                        _buildSomeText("You got ${widget.claim} Mpoints.", 14),
+                        SizedBox(height: 60),
+                        _buildSuccessIcon(),
+                        SizedBox(height: 30),
+                        _buildHomeCaptureBtn(),
+                        SizedBox(height: 25),
+                      ],
+                    )
+                  ],
+                ))));
   }
 
   Widget _buildSuccessIcon() {
@@ -129,7 +140,7 @@ class _ClaimSuccessPageState extends State<ClaimSuccessPage> {
                     .copyWith(fontSize: 16, color: Colors.white),
               ),
               color: Color(0xffAD8D0B),
-              onPressed: takeScreenShot,
+              onPressed: screenShot,
             ),
           )
         ],
@@ -150,17 +161,29 @@ class _ClaimSuccessPageState extends State<ClaimSuccessPage> {
         ));
   }
 
-  takeScreenShot() async {
-    int rand = new Math.Random().nextInt(10000);
+  screenShot() async {
     RenderRepaintBoundary boundary =
-        previewContainer.currentContext.findRenderObject();
+        _globalKey.currentContext.findRenderObject();
     ui.Image image = await boundary.toImage();
-    final directory = (await getApplicationDocumentsDirectory()).path;
     ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    Uint8List pngBytes = byteData.buffer.asUint8List();
-    print(pngBytes);
-
-    File imgFile = new File('$directory/Mp_$rand.png');
-    imgFile.writeAsBytes(pngBytes);
+    final result = await ImageGallerySaver.save(byteData.buffer.asUint8List());
+    print(result);
+    // var filePath = await ImagePickerSaver.saveFile(
+    //     fileData: byteData.buffer.asUint8List());
+    // print(filePath);
   }
+
+  // takeScreenShot() async {
+  //   int rand = new Math.Random().nextInt(10000);
+  //   RenderRepaintBoundary boundary =
+  //       previewContainer.currentContext.findRenderObject();
+  //   ui.Image image = await boundary.toImage();
+  //   final directory = (await getApplicationDocumentsDirectory()).path;
+  //   ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+  //   Uint8List pngBytes = byteData.buffer.asUint8List();
+  //   print(pngBytes);
+
+  //   File imgFile = new File('$directory/Mp_$rand.png');
+  //   imgFile.writeAsBytes(pngBytes);
+  // }
 }

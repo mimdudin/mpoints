@@ -7,6 +7,8 @@ import './news_service.dart';
 import './ads_service.dart';
 import './claim_service.dart';
 import './statement_service.dart';
+import './employee_service.dart';
+
 
 class MainModel extends Model
     with
@@ -16,4 +18,6 @@ class MainModel extends Model
         NewsService,
         AdsService,
         ClaimService,
-        FilterService {}
+        FilterService,
+        EmployeeService
+         {}

@@ -76,6 +76,7 @@ mixin UserService on Model, RewardListService {
             mpointsUsed: result['mpointsUsed'],
             mpointsReceived: result['mpointsReceived'],
             socialPoints: result['social_points'],
+            customerNumber: result['customerNumber'],
             statementList: _statementList);
       }
       //  User.fromJson(result);
@@ -230,6 +231,7 @@ mixin UserService on Model, RewardListService {
     notifyListeners();
 
     final Map<String, dynamic> statementData = {
+      'uniqueId': _statementList.length + 1,
       'banner': getSelectedReward.banner,
       'contra': "Unknown",
       'timestamp': timestamp,
@@ -252,6 +254,7 @@ mixin UserService on Model, RewardListService {
 
       final Statement newStatement = Statement(
           id: responseData['name'],
+          uniqueId: _statementList.length + 1,
           banner: getSelectedReward.banner,
           contra: "Unknown",
           timestamp: timestamp,
@@ -279,6 +282,7 @@ mixin UserService on Model, RewardListService {
     notifyListeners();
 
     final Map<String, dynamic> statementData = {
+      'uniqueId': _statementList.length + 1,
       'claim': claim,
       'contra': "Unknown",
       'timestamp': timestamp,
@@ -300,6 +304,7 @@ mixin UserService on Model, RewardListService {
 
       final Statement newStatement = Statement(
           id: responseData['name'],
+          uniqueId: _statementList.length + 1,
           claim: claim,
           contra: "Unknown",
           timestamp: timestamp,
@@ -452,5 +457,13 @@ mixin UserService on Model, RewardListService {
 
   String format(double n) {
     return n?.toStringAsFixed(n?.truncateToDouble() == n ? 0 : 2);
+  }
+
+  void sortStatements() {
+    _statementList.sort((b, a) => a.uniqueId.compareTo(b.uniqueId));
+  }
+
+  void unSortStatements() {
+    _statementList.sort((a, b) => a.uniqueId.compareTo(b.uniqueId));
   }
 }

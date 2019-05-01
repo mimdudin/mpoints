@@ -25,8 +25,8 @@ class _ClaimSummaryPageState extends State<ClaimSummaryPage> {
   var _partnerPINController = TextEditingController();
   var _validate = false;
   // int _claim, _purchaseAmount;
-  String _partnerPIN, _partnerId, _partnerName;
-  double _pointsRate, _socialRate;
+  String _partnerPIN, _partnerId = '', _namePartner = '';
+  var _ratePoints = 0.0, _rateSocial = 0.0;
 
   @override
   void initState() {
@@ -100,15 +100,15 @@ class _ClaimSummaryPageState extends State<ClaimSummaryPage> {
                       partner.partnerNumber == widget.partnerNumber)
                   .toList()[i];
               // setState(() {
-              _partnerId = partner.id;
-              _partnerName = partner.name;
+                _partnerId = partner?.id;
+                _namePartner = partner?.name;
 
-              _pointsRate = widget.purchaseAmount * partner.pointsRate / 100;
+                _ratePoints = widget.purchaseAmount * partner?.pointsRate / 100;
 
-              _socialRate = widget.purchaseAmount * partner.socialRate / 100;
+                _rateSocial = widget.purchaseAmount * partner?.socialRate / 100;
 
-              print('mpoints rate $_pointsRate, socialRate $_socialRate');
-
+                print('mpoints rate $_ratePoints, socialRate $_rateSocial');
+              // });
               return Column(
                 children: <Widget>[
                   _buildPurchaseLabelValue(Strings.partnerName, partner.name),
@@ -117,10 +117,10 @@ class _ClaimSummaryPageState extends State<ClaimSummaryPage> {
                       Strings.purchaseAmount, "Rs. ${widget.purchaseAmount}"),
                   SizedBox(height: 8),
                   _buildPurchaseLabelValue(
-                      Strings.mpoints, "Mp. ${model.format(_pointsRate)}"),
+                      Strings.mpoints, "Mp. ${model.format(_ratePoints)}"),
                   SizedBox(height: 8),
                   _buildPurchaseLabelValue(
-                      Strings.socialPoints, "Sp. ${model.format(_socialRate)}"),
+                      Strings.socialPoints, "Sp. ${model.format(_rateSocial)}"),
                 ],
               );
             }));
@@ -255,17 +255,20 @@ class _ClaimSummaryPageState extends State<ClaimSummaryPage> {
                     //     0) {
                     // _validate = false;
 
-                    model.fetchAvailableEmployee(_partnerId, _partnerPINController.text).then((_) {
+                    model
+                        .fetchAvailableEmployee(
+                            _partnerId, _partnerPINController.text)
+                        .then((_) {
                       _validate = false;
 
                       if (model.employeeList.length > 0 &&
                           model.employeeList != null) {
                         updateMPoints(
                                 model,
-                                _pointsRate,
-                                _partnerName,
+                                _ratePoints,
+                                _namePartner,
                                 widget.purchaseAmount,
-                                _socialRate,
+                                _rateSocial,
                                 model.user.firstName +
                                         " " +
                                         model.user.lastName ??
@@ -275,7 +278,7 @@ class _ClaimSummaryPageState extends State<ClaimSummaryPage> {
                                 .pushAndRemoveUntil(
                                     MaterialPageRoute(
                                         builder: (BuildContext context) =>
-                                            ClaimSuccessPage(_pointsRate)),
+                                            ClaimSuccessPage(_ratePoints)),
                                     ModalRoute.withName('/main')));
                       } else {
                         _validate = false;

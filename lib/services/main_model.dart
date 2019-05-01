@@ -8,6 +8,7 @@ import './ads_service.dart';
 import './claim_service.dart';
 import './statement_service.dart';
 import './employee_service.dart';
+import './utility_service.dart';
 
 
 class MainModel extends Model
@@ -19,5 +20,6 @@ class MainModel extends Model
         AdsService,
         ClaimService,
         FilterService,
-        EmployeeService
+        EmployeeService,
+        UtilityService
          {}

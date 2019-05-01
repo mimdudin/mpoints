@@ -3,8 +3,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/services.dart';
 
 import './signup_page.dart';
-import '../pages/terms_privacy_page.dart';
 import './auth.dart';
+import '../services/main_model.dart';
+import '../pages/terms_privacy_page.dart';
 import '../utils/circular_loading.dart';
 import '../utils/pallete.dart';
 import '../utils/strings.dart';
@@ -12,8 +13,9 @@ import '../utils/strings.dart';
 class LoginPage extends StatefulWidget {
   final BaseAuth auth;
   final VoidCallback onSignedIn;
+  final MainModel model;
 
-  LoginPage({this.auth, this.onSignedIn});
+  LoginPage({this.auth, this.onSignedIn, this.model});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -76,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
                   Container(
                     alignment: Alignment.center,
                     child: Text(
-                      Strings.signIn,
+                      Strings.signIn.toUpperCase(),
                       style: Theme.of(context)
                           .textTheme
                           .subhead
@@ -193,19 +195,24 @@ class _LoginPageState extends State<LoginPage> {
           ),
           Container(
             height: 40,
+            width: 125,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(100))),
-            child: RaisedButton(
+                borderRadius: BorderRadius.all(Radius.circular(8))),
+            child: RaisedButton.icon(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(100))),
-              child: _isLoading
+                  borderRadius: BorderRadius.all(Radius.circular(8))),
+              label: _isLoading
+                  ? Image.asset('assets/icons/Right.png',
+                      height: 25, color: Pallete.primary)
+                  : Image.asset('assets/icons/Right.png', height: 25),
+              icon: _isLoading
                   ? LoadingCircular10()
                   : Text(
                       Strings.signIn,
-                      style: Theme.of(context)
-                          .textTheme
-                          .button
-                          .copyWith(fontSize: 16, color: Colors.white),
+                      style: Theme.of(context).textTheme.button.copyWith(
+                          fontSize: 17,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400),
                     ),
               color: Pallete.primary,
               onPressed: _validateAndSubmit,
@@ -235,6 +242,7 @@ class _LoginPageState extends State<LoginPage> {
                       builder: (BuildContext context) => SignupPage(
                             auth: widget.auth,
                             onSignedIn: widget.onSignedIn,
+                            model: widget.model,
                           )));
             },
             child: Container(
@@ -265,7 +273,8 @@ class _LoginPageState extends State<LoginPage> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (BuildContext context) => TermsPrivacyPage()));
+                    builder: (BuildContext context) =>
+                        TermsPrivacyPage(widget.model)));
           },
           child: Container(
             child: Text(Strings.terms,
@@ -314,20 +323,17 @@ class _LoginPageState extends State<LoginPage> {
               width: 5.0,
             ),
             RaisedButton.icon(
-                icon: Icon(
-                  FontAwesomeIcons.google,
-                  color: Colors.white,
-                ),
+                icon: Image.asset('assets/icons/google.png', height: 25),
                 elevation: 2.0,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(5))),
-                color: Color(0xFFdd4b39),
+                color: Colors.white,
                 label: Text(
                   Strings.signInSmall,
                   style: Theme.of(context)
                       .textTheme
                       .button
-                      .copyWith(fontSize: 16, color: Colors.white),
+                      .copyWith(fontSize: 16, color: Colors.grey[700]),
                 ),
                 onPressed: _signInWithGoogle),
           ],

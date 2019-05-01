@@ -2,18 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import './auth.dart';
+import '../services/main_model.dart';
 import '../utils/phone_input_formatter.dart';
 import '../utils/pallete.dart';
 import '../utils/strings.dart';
 import '../utils/circular_loading.dart';
 import '../pages/terms_privacy_page.dart';
-import './auth.dart';
 
 class SignupPage extends StatefulWidget {
   final BaseAuth auth;
   final VoidCallback onSignedIn;
+  final MainModel model;
 
-  SignupPage({this.auth, this.onSignedIn});
+  SignupPage({this.auth, this.onSignedIn, this.model});
   @override
   _SignupPageState createState() => _SignupPageState();
 }
@@ -168,24 +170,31 @@ class _SignupPageState extends State<SignupPage> {
         padding: EdgeInsets.symmetric(horizontal: 40),
         height: 40,
         decoration:
-            BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(100))),
+            BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8))),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            RaisedButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(100))),
-              child: _isLoading
-                  ? LoadingCircular10()
-                  : Text(
-                      Strings.signUp.toUpperCase(),
-                      style: Theme.of(context)
-                          .textTheme
-                          .button
-                          .copyWith(fontSize: 16, color: Colors.white),
-                    ),
-              color: Pallete.primary,
-              onPressed: _validateAndSubmit,
+            Container(
+              width: 128,
+              child: RaisedButton.icon(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8))),
+                label: _isLoading
+                    ? Image.asset('assets/icons/Right.png',
+                        height: 25, color: Pallete.primary)
+                    : Image.asset('assets/icons/Right.png', height: 25),
+                icon: _isLoading
+                    ? LoadingCircular10()
+                    : Text(
+                        Strings.signUp,
+                        style: Theme.of(context).textTheme.button.copyWith(
+                            fontSize: 17,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400),
+                      ),
+                color: Pallete.primary,
+                onPressed: _validateAndSubmit,
+              ),
             ),
           ],
         ));
@@ -375,7 +384,8 @@ class _SignupPageState extends State<SignupPage> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (BuildContext context) => TermsPrivacyPage()));
+                    builder: (BuildContext context) =>
+                        TermsPrivacyPage(widget.model)));
           },
           child: Container(
             child: Text(Strings.terms,

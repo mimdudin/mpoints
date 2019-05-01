@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'dart:math' as math;
 import 'package:flutter/services.dart';
 
 // import 'package:firebase_database/firebase_database.dart';
@@ -169,6 +170,13 @@ class Auth implements BaseAuth {
       String photo,
       String referredBy,
       String myReferral}) async {
+    var rnd = new math.Random();
+    var next = rnd.nextDouble() * 1000000;
+    while (next < 100000) {
+      next *= 10;
+    }
+    print(next.toInt());
+
     final Map<String, dynamic> _userData = {
       'firstName': firstName,
       'lastName': lastName,
@@ -182,6 +190,7 @@ class Auth implements BaseAuth {
       'mpointsUsed': 0,
       'mpointsReceived': 0.1,
       'social_points': 0.1,
+      'customerNumber': next.toInt().toString()
       // 'statements': '',
     };
 

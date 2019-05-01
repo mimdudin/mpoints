@@ -98,9 +98,9 @@ class RewardsListItem extends StatelessWidget {
     return Container(
         padding: EdgeInsets.symmetric(horizontal: 10),
         child: Text(
-          reward.rewardValue.toString() != null ||
-                  reward.rewardValue.toString() != ''
-              ? reward.rewardValue.toString()
+          reward.rewardCost.toString().isNotEmpty ||
+                  reward.rewardCost.toString() != ''
+              ? reward.rewardCost.toString()
               : '0.0',
           style: Theme.of(context).textTheme.caption.copyWith(
               fontSize: 12,

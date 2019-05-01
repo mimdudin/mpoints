@@ -170,34 +170,33 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildQRCode(MainModel model) {
     return Container(
-      alignment: Alignment.center,
-        height: 120,
-        width: 120,
-        child: QrImage(
-            data: model.user.uid,
-            gapless: false,
-            foregroundColor: const Color(0xFF111111),
-            onError: (dynamic ex) {
-              print('[QR] ERROR - $ex');
-              // setState(() {
-              //   _inputErrorText =
-              //       'Error! Maybe your input value is too long?';
-            })
-        //   Column(
-        // children: <Widget>[
-        //   Image.asset(
-        //     "assets/images/qrcode.jpg",
-        //     height: 120,
-        //     width: 120,
-        //   ),
-        // SizedBox(height: 3),
-        // Text(
-        //   "MPU00001",
-        //   style: Theme.of(context).textTheme.caption.copyWith(fontSize: 16),
-        // )
-        //   ],
-        // )
-        );
+      child: Column(
+        children: <Widget>[
+          Container(
+            alignment: Alignment.center,
+            height: 120,
+            width: 120,
+            child: QrImage(
+                data: model.user.uid,
+                gapless: false,
+                foregroundColor: const Color(0xFF111111),
+                onError: (dynamic ex) {
+                  print('[QR] ERROR - $ex');
+                  // setState(() {
+                  //   _inputErrorText =
+                  //       'Error! Maybe your input value is too long?';
+                }),
+          ),
+          Text(
+            model.user.customerNumber != null
+                ? model.user.customerNumber
+                : "123456",
+            style: Theme.of(context).textTheme.caption.copyWith(
+                fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2.0),
+          )
+        ],
+      ),
+    );
   }
 
   Widget _buildProfileLabel(String label) {

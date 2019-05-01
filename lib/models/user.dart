@@ -3,7 +3,7 @@ import './statement.dart';
 class User {
   String uid, firstName, lastName;
   String email, phoneNumber, photo;
-  String referredBy, myReferral;
+  String referredBy, myReferral, customerNumber;
   int mpointsUsed;
   double mpoints, mpointsReceived, socialPoints;
   List<Statement> statementList;
@@ -21,5 +21,6 @@ class User {
       this.mpointsUsed,
       this.mpointsReceived,
       this.socialPoints,
-      this.statementList});
+      this.statementList,
+      this.customerNumber});
 }

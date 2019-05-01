@@ -77,7 +77,7 @@ class Strings {
   static String mostPopular = "Most Popular";
 
   //login page
-  static String signIn = "SIGN IN";
+  static String signIn = "Sign In";
   static String errorEmailPass = "Invalid your Email or Password.";
   static String errorNotUser = "Your email and password currently not registered.";
   static String email = "Email";

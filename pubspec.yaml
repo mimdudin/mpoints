@@ -51,7 +51,7 @@ dev_dependencies:
 flutter_icons:
   android: true 
   ios: true
-  image_path: "assets/images/logo/logo_v1.png"
+  image_path: "assets/images/logo/logo_v3.png"
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
 
@@ -71,9 +71,12 @@ flutter:
    - assets/images/acer.jpg
    - assets/images/logo/logo_v1.png
    - assets/images/logo/logo_v2.png
+   - assets/images/logo/logo_v3.png
    - assets/images/logo/launcher_icon.png
    - assets/images/qrcode.jpg
    - assets/images/QR.png
+   - assets/icons/
+   - assets/fonts/
 
 
 
@@ -89,12 +92,10 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
+  fonts:
+    - family: LineAwesome
+      fonts:
+        - asset: assets/fonts/line-awesome.ttf
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

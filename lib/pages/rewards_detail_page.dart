@@ -80,8 +80,8 @@ class RewardsDetailPage extends StatelessWidget {
                       _buildSumCategory(context),
                       SizedBox(height: 5),
                       _buildSumPartner(context),
-                      SizedBox(height: 5),
-                      _buildSumRewardValue(context),
+                      // SizedBox(height: 5),
+                      // _buildSumRewardValue(context),
                       SizedBox(height: 5),
                       _buildSumRewardCost(context),
                       SizedBox(height: 10),
@@ -290,30 +290,30 @@ class RewardsDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSumRewardValue(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: Text(
-              Strings.rewardValue,
-              style: Theme.of(context).textTheme.caption.copyWith(fontSize: 13),
-            ),
-          ),
-        ),
-        Expanded(
-          child: Text(
-            "\$${reward?.rewardValue}" ?? "\$0",
-            style: Theme.of(context)
-                .textTheme
-                .subhead
-                .copyWith(fontSize: 16, color: Pallete.primary),
-          ),
-        )
-      ],
-    );
-  }
+  // Widget _buildSumRewardValue(BuildContext context) {
+  //   return Row(
+  //     children: <Widget>[
+  //       Expanded(
+  //         child: Container(
+  //           padding: EdgeInsets.symmetric(horizontal: 10),
+  //           child: Text(
+  //             Strings.rewardValue,
+  //             style: Theme.of(context).textTheme.caption.copyWith(fontSize: 13),
+  //           ),
+  //         ),
+  //       ),
+  //       Expanded(
+  //         child: Text(
+  //           "\$${reward?.rewardValue}" ?? "\$0",
+  //           style: Theme.of(context)
+  //               .textTheme
+  //               .subhead
+  //               .copyWith(fontSize: 16, color: Pallete.primary),
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
 
   Widget _buildSumRewardCost(BuildContext context) {
     return Row(

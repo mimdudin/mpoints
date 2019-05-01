@@ -39,40 +39,47 @@ class _StatementFragmentState extends State<StatementFragment> {
                     ),
                   ),
                 ),
-                Expanded(
-                    child: model.isLoadingUser
-                        ? Center(child: LoadingCircular25())
-                        : model.getStatementsCount() == 0
-                            ? Center(child: Text("No statement List."))
-                            : ListView.builder(
-                                itemCount: model.statementList == null
-                                    ? 0
-                                    : model.status == 'Claim & Redeem'
-                                        ? model.getStatementsCount()
-                                        : model.status == 'Claim'
-                                            ? model.statementList
-                                                .where((statement) =>
-                                                    statement.claim != null)
-                                                .toList()
-                                                .length
-                                            : model.statementList
-                                                    .where((statement) =>
-                                                        statement.rewardName !=
-                                                        null)
-                                                    .toList()
-                                                    .length ??
-                                                model.getStatementsCount(),
-                                itemBuilder: (context, i) {
-                                  var statement = model.statementList[i];
-                                  return statement.claim != null
-                                      ? BuildStatementClaim(statement, model)
-                                      : BuildStatementReward(statement, model);
-                                },
-                              ))
+                _buildStatementListView(model),
               ],
             ));
       },
     );
+  }
+
+  Widget _buildStatementListView(MainModel model) {
+    // if (model.statementList != null) {
+    //   model.sortStatements();
+    // }
+
+    return Expanded(
+        child: model.isLoadingUser
+            ? Center(child: LoadingCircular25())
+            : model.getStatementsCount() == 0
+                ? Center(child: Text("No statement List."))
+                : ListView.builder(
+                    itemCount: model.statementList == null
+                        ? 0
+                        : model.status == 'Claim & Redeem'
+                            ? model.getStatementsCount()
+                            : model.status == 'Claim'
+                                ? model.statementList
+                                    .where(
+                                        (statement) => statement.claim != null)
+                                    .toList()
+                                    .length
+                                : model.statementList
+                                        .where((statement) =>
+                                            statement.rewardName != null)
+                                        .toList()
+                                        .length ??
+                                    model.getStatementsCount(),
+                    itemBuilder: (context, i) {
+                      var statement = model.statementList[i];
+                      return statement.claim != null
+                          ? BuildStatementClaim(statement, model)
+                          : BuildStatementReward(statement, model);
+                    },
+                  ));
   }
 
   Widget _buildBalance(MainModel model) {
@@ -190,15 +197,43 @@ class DataSearchStatement extends SearchDelegate<Statement> {
   Widget buildResults(BuildContext context) {
     // TODO: implement buildResults
     final _statementList = model.statementList
-        .where((statement) =>
-            statement.rewardName != null &&
-            statement.rewardName.toLowerCase().contains(query.toLowerCase()))
-        .toList();
+                .where((statement) =>
+                    statement.rewardName != null &&
+                    statement.rewardName
+                        .toLowerCase()
+                        .contains(query.toLowerCase()))
+                .toList()
+                .length >
+            0
+        ? model.statementList
+            .where((statement) =>
+                statement.rewardName != null &&
+                statement.rewardName
+                    .toLowerCase()
+                    .contains(query.toLowerCase()))
+            .toList()
+        : model.statementList
+                    .where((statement) =>
+                        statement.partnerName != null &&
+                        statement.partnerName
+                            .toLowerCase()
+                            .contains(query.toLowerCase()))
+                    .toList()
+                    .length >
+                0
+            ? model.statementList
+                .where((statement) =>
+                    statement.partnerName != null &&
+                    statement.partnerName
+                        .toLowerCase()
+                        .contains(query.toLowerCase()))
+                .toList()
+            : null;
 
     return Container(
         child: query == ''
             ? buildSuggestions(context)
-            : _statementList.length == 0
+            : _statementList == null
                 ? Center(
                     child: Text("No statement found."),
                   )
@@ -218,19 +253,19 @@ class DataSearchStatement extends SearchDelegate<Statement> {
   Widget buildSuggestions(BuildContext context) {
     final suggestionsStatement = query.isEmpty
         ? model.statementList
-            .where((statement) => statement.rewardName != null)
+            .where((statement) => statement.partnerName != null)
             .toList()
         : model.statementList
             .where((statement) =>
-                statement.rewardName != null &&
-                statement.rewardName
+                statement.partnerName != null &&
+                statement.partnerName
                     .toLowerCase()
                     .contains(query.toLowerCase()))
             .toList();
     return ListView.builder(
       itemBuilder: (context, i) => ListTile(
             leading: Icon(Icons.history),
-            title: Text(suggestionsStatement[i]?.rewardName,
+            title: Text(suggestionsStatement[i]?.partnerName,
                 style:
                     Theme.of(context).textTheme.caption.copyWith(fontSize: 16)),
 
@@ -250,7 +285,7 @@ class DataSearchStatement extends SearchDelegate<Statement> {
             //       ]),
             // ),
             onTap: () {
-              query = suggestionsStatement[i]?.rewardName;
+              query = suggestionsStatement[i]?.partnerName;
             },
           ),
       itemCount: suggestionsStatement.length,
@@ -270,7 +305,7 @@ class BuildStatementClaim extends StatelessWidget {
       elevation: 2.0,
       color: Colors.white,
       child: Container(
-        color: Pallete.primary,
+        color: Color(0xffe6e6e6),
         padding: EdgeInsets.symmetric(vertical: 3),
         child: Column(
           children: <Widget>[
@@ -413,10 +448,10 @@ class BuildStatementReward extends StatelessWidget {
                       ),
                       child: Text(
                         "SUCCESS",
-                        style: Theme.of(context)
-                            .textTheme
-                            .title
-                            .copyWith(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.title.copyWith(
+                            fontSize: 10,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
                       ),
                     )
                   ],
@@ -442,7 +477,7 @@ class BuildImageProfile extends StatelessWidget {
       width: 60,
       height: 60,
       child: CircleAvatar(
-        backgroundColor: Color(0xffe6e6e6),
+        backgroundColor: Colors.white,
         child: ClipOval(
             child: statement.claim != null
                 ? Icon(
@@ -468,3 +503,10 @@ class BuildImageProfile extends StatelessWidget {
     );
   }
 }
+
+
+
+// I have a note to do for the app user;
+// - add customerNumber textbelow qr
+// - make tos, data socials fetch on server
+// - app name

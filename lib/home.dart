@@ -15,6 +15,7 @@ import './authentications/auth.dart';
 import './utils/strings.dart';
 import './utils/pallete.dart';
 import './utils/circular_loading.dart';
+import './utils/my_icons.dart';
 
 class Home extends StatefulWidget {
   final MainModel model;
@@ -36,6 +37,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   int _selectedDrawerIndex = 0;
+  bool _isSort = false;
   List<FilterModel> _listFilter = [];
 
   _getDrawerItemWidget(int pos) {
@@ -67,11 +69,22 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+
+    // setState(() {
+    _isSort = false;
+    // widget.model.ivariList.sort((a, b) => a.postId.compareTo(b.postId));
+    // });
+  }
+
   Future loadData() async {
     await Future.wait([
       widget.model.fetchNewsList(),
       widget.model.fetchRewardList(),
       widget.model.fetchPartnerList(),
+      widget.model.fetchUtility(),
       widget.model.fetchAds(),
       widget.auth.currentUser().then((currentUser) {
         widget.model.fetchUserById(currentUser.uid);
@@ -127,13 +140,26 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               },
                             )),
                     IconButton(
-                        icon: Icon(Icons.filter_list),
+                        icon: Icon(LineAwesomeIcons.filter),
                         onPressed: () => showModalBottomSheet(
                               context: context,
                               builder: (BuildContext context) {
                                 return ModalBottomSheet(_listFilter, model);
                               },
                             )),
+                    IconButton(
+                        icon: Icon(Icons.filter_list),
+                        onPressed: () {
+                          setState(() {
+                            if (_isSort == false) {
+                              model.sortStatements();
+                              _isSort = true;
+                            } else {
+                              model.unSortStatements();
+                              _isSort = false;
+                            }
+                          });
+                        }),
                   ],
           ),
           drawer: Drawer(
@@ -142,8 +168,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 _buildProfileBanner(model),
                 Column(children: drawerOptions),
                 // Divider(height: 0),
-                _buildFacebook(),
-                _buildWebsite(),
+                _buildFacebook(model),
+                _buildWebsite(model),
                 _buildEmail(model),
                 _buildSignOut(),
                 // Divider(height: 0)
@@ -195,7 +221,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         });
   }
 
-  Widget _buildFacebook() {
+  Widget _buildFacebook(MainModel model){
     return ListTile(
         // contentPadding: EdgeInsets.only(left: 73.5, right: 15),
         leading: Container(
@@ -205,10 +231,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         title: Text('Facebook',
             style: TextStyle(
                 fontSize: 18, letterSpacing: 1, fontWeight: FontWeight.w400)),
-        onTap: () => _launchURL('http://facebook.com'));
+        onTap: () => _launchURL(model.utility.facebook ?? 'http://goal.com'));
   }
 
-  Widget _buildWebsite() {
+  Widget _buildWebsite(MainModel model) {
     return ListTile(
         // contentPadding: EdgeInsets.only(left: 73.5, right: 15),
         leading: Container(
@@ -217,7 +243,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         title: Text('Website',
             style: TextStyle(
                 fontSize: 18, letterSpacing: 1, fontWeight: FontWeight.w400)),
-        onTap: () => _launchURL('http://google.com'));
+        onTap: () => _launchURL(model.utility.website ?? 'http://google.com'));
   }
 
   void _launchURL(String urlAds) async {
@@ -240,7 +266,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 fontSize: 18, letterSpacing: 1, fontWeight: FontWeight.w400)),
         onTap: () => model.isLoadingUser
             ? {}
-            : launch('mailto:${model.user.email}?subject=Support'));
+            : launch('mailto:${model.utility.email}?subject=Support'));
   }
 
   Widget _buildProfileBanner(MainModel model) {

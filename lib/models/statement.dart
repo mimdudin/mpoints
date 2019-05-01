@@ -1,7 +1,7 @@
 class Statement {
   String id;
   String partnerName, contra, rewardName, banner;
-  int timestamp, purchaseAmount, rewardCost, rewardValue;
+  int timestamp, purchaseAmount, rewardCost, rewardValue, uniqueId;
   double claim;
 
   Statement(
@@ -14,7 +14,8 @@ class Statement {
       this.claim,
       this.purchaseAmount,
       this.rewardCost,
-      this.rewardValue});
+      this.rewardValue,
+      this.uniqueId});
 
   factory Statement.fromJson(String statementId, Map<String, dynamic> json) {
     return Statement(
@@ -27,6 +28,7 @@ class Statement {
         claim: json['claim'],
         purchaseAmount: json['purchase_amount'],
         rewardCost: json['reward_cost'],
-        rewardValue: json['reward_value']);
+        rewardValue: json['reward_value'],
+        uniqueId: json['uniqueId']);
   }
 }

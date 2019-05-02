@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
     return ScopedModel(
       model: model,
       child: MaterialApp(
+        title: 'MoPoints Rewards',
         theme: ThemeData(
             primaryColor: Pallete.primary, cursorColor: Pallete.primary),
         home: SplashScreen(),

@@ -15,7 +15,8 @@ import '../pages/rewards_library_page.dart';
 import '../utils/circular_loading.dart';
 import '../utils/strings.dart';
 import '../utils/pallete.dart';
-import '../home_screens/ads.dart';
+// import '../home_screens/ads.dart';
+import '../home_screens/ads_slider.dart';
 
 class HomeFragment extends StatefulWidget {
   @override
@@ -95,7 +96,11 @@ class _HomeFragmentState extends State<HomeFragment> {
               //     margin: EdgeInsets.symmetric(horizontal: 10),
               //     height: 60,
               //     child: model.isLoadingAds ? LoadingCircular25() : Ads()),
-              Ads(),
+              Container(
+                height: 60,
+                margin: EdgeInsets.symmetric(horizontal: 10),
+                child: model.isLoadingNews ? LoadingCircular25() : AdsSlider(),
+              ),
               SizedBox(height: 15),
             ],
           ),

@@ -7,13 +7,19 @@ import '../models/ads.dart';
 import '../utils/constant.dart';
 
 mixin AdsService on Model {
-  Ads _ads = Ads();
-  Ads get ads => _ads;
+  List<Ads> _adsList = [];
+  List<Ads> get adsList => _adsList;
 
   bool _isLoadingAds = false;
   bool get isLoadingAds => _isLoadingAds;
 
-  Future<Ads> fetchAds() async {
+  int getAdsListCount() {
+    return _adsList.length;
+  }
+
+  Future<Ads> fetchAdsList() async {
+    var _ads;
+
     _isLoadingAds = true;
     notifyListeners();
 
@@ -21,10 +27,17 @@ mixin AdsService on Model {
         await http.get(Constant.baseUrl + Constant.adsParam + Constant.jsonExt);
 
     if (response.statusCode == 200) {
-      Map responseData = json.decode(response.body);
+      var responseData = json.decode(response.body);
       print(responseData);
 
-      _ads = Ads(banner: responseData['banner'], url: responseData['url']);
+      final List<Ads> fetchedAdsList = [];
+      responseData.forEach((String adsId, dynamic json) {
+        _ads = Ads.fromJson(adsId, json);
+
+        fetchedAdsList.add(_ads);
+      });
+
+      _adsList = fetchedAdsList;
 
       _isLoadingAds = false;
       notifyListeners();
@@ -37,8 +50,8 @@ mixin AdsService on Model {
     }
   }
 
-  void clearAds() {
-    _ads = null;
+  void clearAdsist() {
+    _adsList.clear();
     notifyListeners();
   }
 }

@@ -85,7 +85,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       widget.model.fetchRewardList(),
       widget.model.fetchPartnerList(),
       widget.model.fetchUtility(),
-      widget.model.fetchAds(),
+      widget.model.fetchAdsList(),
       widget.auth.currentUser().then((currentUser) {
         widget.model.fetchUserById(currentUser.uid);
         print(currentUser);

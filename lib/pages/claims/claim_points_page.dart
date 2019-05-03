@@ -43,11 +43,11 @@ class _ClaimPointsPageState extends State<ClaimPointsPage> {
                 Container(
                   alignment: Alignment.center,
                   child: Text(
-                    Strings.purchaseTrans,
+                    Strings.getPoints,
                     style: Theme.of(context)
                         .textTheme
                         .title
-                        .copyWith(fontSize: 15, color: Pallete.primary),
+                        .copyWith(fontSize: 17, color: Pallete.primary),
                   ),
                 ),
                 SizedBox(height: 130),
@@ -102,27 +102,31 @@ class _ClaimPointsPageState extends State<ClaimPointsPage> {
 
   Widget _buildNextBtn(MainModel model) {
     return Container(
+      alignment: Alignment.centerRight,
       width: MediaQuery.of(context).size.width / 1.9,
+      height: 40,
+      decoration:
+          BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8))),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          Container(),
           Container(
-            alignment: Alignment.centerRight,
-            height: 40,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(100))),
-            child: RaisedButton(
+            width: 105,
+            child: RaisedButton.icon(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(100))),
-              child: model.isLoadingClaim
+                  borderRadius: BorderRadius.all(Radius.circular(8))),
+              label: model.isLoadingClaim
+                  ? Image.asset('assets/icons/Right.png',
+                      height: 25, color: Pallete.primary)
+                  : Image.asset('assets/icons/Right.png', height: 25),
+              icon: model.isLoadingClaim
                   ? LoadingCircular10()
                   : Text(
                       Strings.next,
-                      style: Theme.of(context)
-                          .textTheme
-                          .button
-                          .copyWith(fontSize: 16, color: Colors.white),
+                      style: Theme.of(context).textTheme.button.copyWith(
+                          fontSize: 17,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400),
                     ),
               color: Pallete.primary,
               onPressed: () {

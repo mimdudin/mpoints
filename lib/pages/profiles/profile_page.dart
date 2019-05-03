@@ -188,9 +188,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 }),
           ),
           Text(
-            model.user.customerNumber != null
-                ? model.user.customerNumber
-                : "123456",
+            model.isLoadingUser
+                ? 'Loading...'
+                : model.user == null || model.user.customerNumber == ""
+                    ? "123456"
+                    : "${model.user.customerNumber}",
             style: Theme.of(context).textTheme.caption.copyWith(
                 fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2.0),
           )

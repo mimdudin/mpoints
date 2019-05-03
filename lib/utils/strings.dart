@@ -45,7 +45,7 @@ class Strings {
       "Your current MPoints are not enough to redeem this reward.";
 
   //redem details page
-  static String qrScanner = "QR Scanner";
+  static String identifyPartner = "Identify Partner";
   static String or = "Or";
   static String next = "Next";
   static String noCamSelected = "No camera selected";
@@ -59,12 +59,12 @@ class Strings {
   static String reedemSum = "PURCHASE SUMMARY";
   static String rewardName = "Reward Name:";
   static String mpBalance = "Mp. Balance:";
-  static String enterPartPIN = "Enter Partner PIN";
+  static String enterPartPIN = "Enter Employee PIN";
   static String finish = "Finish";
   static String invalidPartPIN = "Invalid Partner PIN";
 
   //claim page
-  static String purchaseTrans = "PURCHASE TRANSACTION";
+  static String getPoints = "Get Points";
   static String purchaseSum = "Purchase Summary";
   static String enterPurchaseAmount = "Enter Purchase Amount";
   static String purchaseAmount = "Purchase Amount:";
@@ -79,7 +79,8 @@ class Strings {
   //login page
   static String signIn = "Sign In";
   static String errorEmailPass = "Invalid your Email or Password.";
-  static String errorNotUser = "Your email and password currently not registered.";
+  static String errorNotUser =
+      "Your email and password currently not registered.";
   static String email = "Email";
   static String hintEmail = "enter your email";
   static String enterValidEmail = "Please enter a valid email";

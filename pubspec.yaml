@@ -76,6 +76,9 @@ flutter:
    - assets/images/qrcode.jpg
    - assets/images/QR.png
    - assets/icons/
+   - assets/icons/success.png
+   - assets/icons/Home.png
+   - assets/icons/Capture.png
    - assets/fonts/
 
 

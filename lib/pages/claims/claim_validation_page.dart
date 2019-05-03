@@ -98,7 +98,7 @@ class _ClaimValidationPageState extends State<ClaimValidationPage>
                 SizedBox(height: 5),
                 _buildBackBtn(context),
                 SizedBox(height: 20),
-                _buildQRandOrLabel(Strings.qrScanner),
+                _buildQRandOrLabel(Strings.identifyPartner),
                 SizedBox(height: 40),
                 _buildQRScanner(),
                 SizedBox(height: 25),
@@ -161,7 +161,7 @@ class _ClaimValidationPageState extends State<ClaimValidationPage>
         style: Theme.of(context)
             .textTheme
             .title
-            .copyWith(fontSize: 15, color: Pallete.primary),
+            .copyWith(fontSize: 17, color: Pallete.primary),
       ),
     );
   }
@@ -173,55 +173,58 @@ class _ClaimValidationPageState extends State<ClaimValidationPage>
       width: MediaQuery.of(context).size.width / 1.3,
       decoration:
           BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(100))),
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(100))),
-        child: Text(
-          Strings.next,
-          style: Theme.of(context)
-              .textTheme
-              .button
-              .copyWith(fontSize: 16, color: Colors.white),
-        ),
-        color: Pallete.primary,
-        onPressed: () {
-          setState(() {
-            if (_partNumController.text.isNotEmpty) {
-              if (widget.model.partnerList
-                      .where(
-                          (partner) => partner.partnerNumber == _partnerNumber)
-                      .toList()
-                      .length >
-                  0) {
-                _validate = false;
+      child: Container(
+          width: 105,
+          child: RaisedButton.icon(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8))),
+            label: Image.asset('assets/icons/Right.png', height: 25),
+            icon: Text(
+              Strings.next,
+              style: Theme.of(context).textTheme.button.copyWith(
+                  fontSize: 17,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w400),
+            ),
+            color: Pallete.primary,
+            onPressed: () {
+              setState(() {
+                if (_partNumController.text.isNotEmpty) {
+                  if (widget.model.partnerList
+                          .where((partner) =>
+                              partner.partnerNumber == _partnerNumber)
+                          .toList()
+                          .length >
+                      0) {
+                    _validate = false;
 
-                // var mpoints = int.parse(widget.purchaseAmount) * 10 / 100;
-                // print(mpoints.toString());
+                    // var mpoints = int.parse(widget.purchaseAmount) * 10 / 100;
+                    // print(mpoints.toString());
 
-                // var socialPoints = int.parse(widget.purchaseAmount) * 1 / 100;
-                // print(socialPoints.toString());
+                    // var socialPoints = int.parse(widget.purchaseAmount) * 1 / 100;
+                    // print(socialPoints.toString());
 
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => ClaimSummaryPage(
-                            int.parse(widget.purchaseAmount),
-                            // mpoints,
-                            // socialPoints,
-                            _partnerNumber)));
-                _partNumController.clear();
-              } else {
-                _validate = false;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => ClaimSummaryPage(
+                                int.parse(widget.purchaseAmount),
+                                // mpoints,
+                                // socialPoints,
+                                _partnerNumber)));
+                    _partNumController.clear();
+                  } else {
+                    _validate = false;
 
-                _buildAlert(context);
-                _partNumController.clear();
-              }
-            } else {
-              _validate = true;
-            }
-          });
-        },
-      ),
+                    _buildAlert(context);
+                    _partNumController.clear();
+                  }
+                } else {
+                  _validate = true;
+                }
+              });
+            },
+          )),
     );
   }
 

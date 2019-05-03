@@ -95,7 +95,7 @@ class _RedeemValidationPageState extends State<RedeemValidationPage>
                 SizedBox(height: 5),
                 _buildBackBtn(context),
                 SizedBox(height: 20),
-                _buildQRandOrLabel(Strings.qrScanner),
+                _buildQRandOrLabel(''),
                 SizedBox(height: 40),
                 _buildQRScanner(),
                 SizedBox(height: 25),

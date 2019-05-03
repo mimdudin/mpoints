@@ -10,6 +10,8 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 
+import '../../utils/strings.dart';
+
 class ClaimSuccessPage extends StatefulWidget {
   final claim;
 
@@ -44,12 +46,12 @@ class _ClaimSuccessPageState extends State<ClaimSuccessPage> {
                     SizedBox(height: 40),
                     Column(
                       children: <Widget>[
+                        _buildSuccessIcon(),
+                        SizedBox(height: 40),
                         _buildSomeText("Congratulations!!!", 24),
                         SizedBox(height: 10),
                         _buildSomeText("You got ${widget.claim} Mpoints.", 14),
-                        SizedBox(height: 60),
-                        _buildSuccessIcon(),
-                        SizedBox(height: 30),
+                        SizedBox(height: 120),
                         _buildHomeCaptureBtn(),
                         SizedBox(height: 25),
                       ],
@@ -60,12 +62,11 @@ class _ClaimSuccessPageState extends State<ClaimSuccessPage> {
 
   Widget _buildSuccessIcon() {
     return Container(
-      child: Icon(
-        Icons.check_circle_outline,
-        color: Color(0xffAD8D0B),
-        size: 140,
-      ),
-    );
+        child: Image.asset(
+      'assets/icons/success.png',
+      height: 150,
+      color: Colors.grey[350],
+    ));
   }
 
   Widget _buildSomeText(String label, double fontSize) {
@@ -88,7 +89,7 @@ class _ClaimSuccessPageState extends State<ClaimSuccessPage> {
       alignment: Alignment.centerLeft,
       height: 100,
       child: Image.asset(
-        "assets/images/logo/logo_v2.png",
+        "assets/images/logo/logo_v1.png",
         fit: BoxFit.cover,
       ),
     );
@@ -96,53 +97,55 @@ class _ClaimSuccessPageState extends State<ClaimSuccessPage> {
 
   Widget _buildHomeCaptureBtn() {
     return Container(
+      alignment: Alignment.centerLeft,
+      margin: EdgeInsets.symmetric(horizontal: 30),
+      height: 40,
+      decoration:
+          BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8))),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Container(
-            height: 40,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(100))),
+            width: 118,
             child: RaisedButton.icon(
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(100))),
-                icon: Icon(
-                  Icons.home,
-                  color: Colors.white,
-                ),
-                label: Text(
-                  "Home",
-                  style: Theme.of(context)
-                      .textTheme
-                      .button
-                      .copyWith(fontSize: 16, color: Colors.white),
+                    borderRadius: BorderRadius.all(Radius.circular(8))),
+                label: Container(
+                  padding: EdgeInsets.only(bottom: 4),
+                  child:  Image.asset('assets/icons/Home.png', height: 25),),
+                icon: Text(
+                  Strings.home,
+                  style: Theme.of(context).textTheme.button.copyWith(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w300),
                 ),
                 color: Color(0xffAD8D0B),
                 onPressed: () => Navigator.of(context).pop()),
           ),
-          SizedBox(width: 30),
-          Container(
-            height: 40,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(100))),
-            child: RaisedButton.icon(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(100))),
-              icon: Icon(
-                Icons.camera_alt,
-                color: Colors.white,
-              ),
-              label: Text(
-                "Photo",
-                style: Theme.of(context)
-                    .textTheme
-                    .button
-                    .copyWith(fontSize: 16, color: Colors.white),
-              ),
-              color: Color(0xffAD8D0B),
-              onPressed: screenShot,
-            ),
-          )
+          // SizedBox(width: 30),
+          // Container(
+          //   height: 40,
+          //   decoration: BoxDecoration(
+          //       borderRadius: BorderRadius.all(Radius.circular(100))),
+          //   child: RaisedButton.icon(
+          //     shape: RoundedRectangleBorder(
+          //         borderRadius: BorderRadius.all(Radius.circular(100))),
+          //     icon: Icon(
+          //       Icons.camera_alt,
+          //       color: Colors.white,
+          //     ),
+          //     label: Text(
+          //       "Photo",
+          //       style: Theme.of(context)
+          //           .textTheme
+          //           .button
+          //           .copyWith(fontSize: 16, color: Colors.white),
+          //     ),
+          //     color: Color(0xffAD8D0B),
+          //     onPressed: screenShot,
+          //   ),
+          // )
         ],
       ),
     );

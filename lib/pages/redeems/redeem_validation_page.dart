@@ -95,7 +95,7 @@ class _RedeemValidationPageState extends State<RedeemValidationPage>
                 SizedBox(height: 5),
                 _buildBackBtn(context),
                 SizedBox(height: 20),
-                _buildQRandOrLabel(''),
+                _buildQRandOrLabel(Strings.identifyPartner),
                 SizedBox(height: 40),
                 _buildQRScanner(),
                 SizedBox(height: 25),
@@ -156,7 +156,7 @@ class _RedeemValidationPageState extends State<RedeemValidationPage>
         style: Theme.of(context)
             .textTheme
             .title
-            .copyWith(fontSize: 15, color: Pallete.primary),
+            .copyWith(fontSize: 17, color: Pallete.primary),
       ),
     );
   }
@@ -168,39 +168,43 @@ class _RedeemValidationPageState extends State<RedeemValidationPage>
       width: MediaQuery.of(context).size.width / 1.3,
       decoration:
           BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(100))),
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(100))),
-        child: Text(
-          Strings.next,
-          style: Theme.of(context)
-              .textTheme
-              .button
-              .copyWith(fontSize: 16, color: Colors.white),
-        ),
-        color: Pallete.primary,
-        onPressed: () {
-          setState(() {
-            if (_partNumberController.text == widget.rewards.partnerNumber) {
-              _validate = false;
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          RedeemSummaryPage(widget.rewards, widget.i)));
-              _partNumberController.clear();
-            } else if (_partNumberController.text.isEmpty) {
-              _validate = true;
-            } else if (_partNumberController.text !=
-                widget.rewards.partnerNumber) {
-              _validate = false;
+      child: Container(
+          width: 105,
+          child: RaisedButton.icon(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8))),
+            label: Image.asset('assets/icons/Right.png', height: 25),
+            icon: Text(
+              Strings.next,
+              style: Theme.of(context).textTheme.button.copyWith(
+                  fontSize: 17,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w400),
+            ),
+            color: Pallete.primary,
+            onPressed: () {
+              setState(() {
+                if (_partNumberController.text ==
+                    widget.rewards.partnerNumber) {
+                  _validate = false;
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              RedeemSummaryPage(widget.rewards, widget.i)));
+                  _partNumberController.clear();
+                } else if (_partNumberController.text.isEmpty) {
+                  _validate = true;
+                } else if (_partNumberController.text !=
+                    widget.rewards.partnerNumber) {
+                  _validate = false;
 
-              _buildAlert(context);
-              _partNumberController.clear();
-            }
-          });
-        },
-      ),
+                  _buildAlert(context);
+                  _partNumberController.clear();
+                }
+              });
+            },
+          )),
     );
   }
 

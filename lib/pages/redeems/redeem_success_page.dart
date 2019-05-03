@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 
+import '../../utils/strings.dart';
+import '../../utils/pallete.dart';
+import '../../services/main_model.dart';
+
 class RedeemSuccessPage extends StatefulWidget {
   final String rewardName;
+  final MainModel model;
+  final Function format;
 
-  RedeemSuccessPage(this.rewardName);
+  RedeemSuccessPage(this.rewardName, this.model, this.format);
 
   @override
   _RedeemSuccessPageState createState() => _RedeemSuccessPageState();
@@ -21,12 +27,16 @@ class _RedeemSuccessPageState extends State<RedeemSuccessPage> {
         SizedBox(height: 40),
         Column(
           children: <Widget>[
-            _buildSomeText("Congratulations!!!", 24),
-            SizedBox(height: 10),
-            _buildSomeText("${widget.rewardName} redeemed successfully.", 14),
-            SizedBox(height: 60),
             _buildSuccessIcon(),
-            SizedBox(height: 30),
+            SizedBox(height: 40),
+            _buildSomeText("Redemption Success.", 24),
+            SizedBox(height: 15),
+            _buildSomeText("${widget.rewardName} Redeemed.", 14),
+            SizedBox(height: 15),
+            _buildSomeText(
+                "Remaining Mpoints: ${widget.format(widget.model.user.mpoints)}",
+                16),
+            SizedBox(height: 120),
             _buildHomeBtn(),
             SizedBox(height: 25),
           ],
@@ -37,12 +47,11 @@ class _RedeemSuccessPageState extends State<RedeemSuccessPage> {
 
   Widget _buildSuccessIcon() {
     return Container(
-      child: Icon(
-        Icons.check_circle_outline,
-        color: Color(0xffAD8D0B),
-        size: 140,
-      ),
-    );
+        child: Image.asset(
+      'assets/icons/success.png',
+      height: 150,
+      color: Pallete.primary,
+    ));
   }
 
   Widget _buildSomeText(String label, double fontSize) {
@@ -74,26 +83,33 @@ class _RedeemSuccessPageState extends State<RedeemSuccessPage> {
   Widget _buildHomeBtn() {
     return Container(
       alignment: Alignment.centerRight,
+      margin: EdgeInsets.symmetric(horizontal: 30),
       height: 40,
-      width: MediaQuery.of(context).size.width / 1.8,
       decoration:
-          BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(100))),
-      child: RaisedButton.icon(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(100))),
-        icon: Icon(
-          Icons.home,
-          color: Colors.white,
-        ),
-        label: Text(
-          "Home",
-          style: Theme.of(context)
-              .textTheme
-              .button
-              .copyWith(fontSize: 16, color: Colors.white),
-        ),
-        color: Color(0xffAD8D0B),
-        onPressed: () => Navigator.pop(context),
+          BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8))),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Container(
+            width: 118,
+            child: RaisedButton.icon(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8))),
+                label: Container(
+                  padding: EdgeInsets.only(bottom: 4),
+                  child: Image.asset('assets/icons/Home.png', height: 25),
+                ),
+                icon: Text(
+                  Strings.home,
+                  style: Theme.of(context).textTheme.button.copyWith(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w300),
+                ),
+                color: Color(0xffAD8D0B),
+                onPressed: () => Navigator.of(context).pop()),
+          ),
+        ],
       ),
     );
   }

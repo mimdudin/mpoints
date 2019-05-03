@@ -51,11 +51,11 @@ class _RedeemSummaryPageState extends State<RedeemSummaryPage> {
                 Container(
                   alignment: Alignment.center,
                   child: Text(
-                    Strings.reedemSum,
+                    Strings.summary,
                     style: Theme.of(context)
                         .textTheme
                         .title
-                        .copyWith(fontSize: 15, color: Pallete.primary),
+                        .copyWith(fontSize: 17, color: Pallete.primary),
                   ),
                 ),
                 SizedBox(height: 30),
@@ -180,27 +180,31 @@ class _RedeemSummaryPageState extends State<RedeemSummaryPage> {
 
   Widget _buildFinishBtn(MainModel model) {
     return Container(
+      alignment: Alignment.centerRight,
       width: MediaQuery.of(context).size.width / 1.9,
+      height: 40,
+      decoration:
+          BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8))),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          Container(),
           Container(
-            alignment: Alignment.centerRight,
-            height: 40,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(100))),
-            child: RaisedButton(
+            width: 115,
+            child: RaisedButton.icon(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(100))),
-              child: model.isLoadingEmployee || model.isLoadingUser
+                  borderRadius: BorderRadius.all(Radius.circular(8))),
+              label: model.isLoadingEmployee || model.isLoadingUser
+                  ? Image.asset('assets/icons/Right.png',
+                      height: 25, color: Pallete.primary)
+                  : Image.asset('assets/icons/Right.png', height: 25),
+              icon: model.isLoadingEmployee || model.isLoadingUser
                   ? LoadingCircular10()
                   : Text(
                       Strings.finish,
-                      style: Theme.of(context)
-                          .textTheme
-                          .button
-                          .copyWith(fontSize: 16, color: Colors.white),
+                      style: Theme.of(context).textTheme.button.copyWith(
+                          fontSize: 17,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400),
                     ),
               color: Pallete.primary,
               onPressed: () {
@@ -219,7 +223,9 @@ class _RedeemSummaryPageState extends State<RedeemSummaryPage> {
                                 MaterialPageRoute(
                                     builder: (BuildContext context) =>
                                         RedeemSuccessPage(
-                                            widget.rewards?.name)),
+                                            widget.rewards?.name,
+                                            model,
+                                            model.format)),
                                 ModalRoute.withName('/main')));
                       } else {
                         _validate = false;

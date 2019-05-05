@@ -354,7 +354,7 @@ class _ClaimSummaryPageState extends State<ClaimSummaryPage> {
       model.updateMPointsReceived(claim),
       model.updateSocialPoints(socialPoints),
       model.addClaimToStatement(claim, partnerName, purchaseAmount),
-      model.addClaimToPartner(claim, purchaseAmount, user, partnerId),
+      // model.addClaimToPartner(claim, purchaseAmount, user, partnerId),
     ]);
   }
 }

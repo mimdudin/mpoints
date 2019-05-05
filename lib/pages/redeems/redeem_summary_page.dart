@@ -264,13 +264,13 @@ class _RedeemSummaryPageState extends State<RedeemSummaryPage> {
       model.updateMPoints(model.user.mpoints - rewardCost),
       model.updateMPointsUsed(rewardCost),
       model.addRedeemToStatement(rewardCost),
-      model.addRedeemToPartner(
-          widget.rewards?.banner,
-          widget.rewards?.partnerName,
-          rewardCost,
-          widget.rewards?.name,
-          widget.rewards?.partnerId,
-          "${model.user?.firstName} ${model.user?.lastName}" ?? "Unknown"),
+      // model.addRedeemToPartner(
+      //     widget.rewards?.banner,
+      //     widget.rewards?.partnerName,
+      //     rewardCost,
+      //     widget.rewards?.name,
+      //     widget.rewards?.partnerId,
+      //     "${model.user?.firstName} ${model.user?.lastName}" ?? "Unknown"),
     ]);
   }
 }

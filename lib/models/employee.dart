@@ -1,5 +1,5 @@
 class Employee {
-  String id, pin;
+  String id, pin, fullName;
 
-  Employee(this.id, this.pin);
+  Employee(this.id, this.pin, this.fullName);
 }

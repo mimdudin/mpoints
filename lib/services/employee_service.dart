@@ -11,13 +11,14 @@ mixin EmployeeService on Model {
   bool _isLoadingEmployee = false;
   bool get isLoadingEmployee => _isLoadingEmployee;
 
-  Future<List<Employee>> fetchAvailableEmployee(String partnerId, String partnerPIN) async {
+  Future<List<Employee>> fetchAvailableEmployee(
+      String partnerId, String partnerPIN) async {
     _isLoadingEmployee = true;
     notifyListeners();
 
     DatabaseReference ref = FirebaseDatabase.instance.reference();
     await ref
-        .child("partners/$partnerId/employees")
+        .child("partners_list/$partnerId/employees")
         .orderByChild('PIN')
         .equalTo(partnerPIN)
         .once()
@@ -34,6 +35,7 @@ mixin EmployeeService on Model {
           var _employee = new Employee(
             key,
             data['PIN'],
+            data['fullName'],
           );
           _fetchedEmployees.add(_employee);
         });

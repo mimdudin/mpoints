@@ -438,20 +438,37 @@ class BuildStatementReward extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 8),
+                    // Container(
+                    //   margin: EdgeInsets.only(bottom: 10),
+                    //   padding: EdgeInsets.all(5),
+                    //   // color: Colors.lightGreen,
+                    //   decoration: BoxDecoration(
+                    //     borderRadius: BorderRadius.all(Radius.circular(50)),
+                    //     color: Colors.green,
+                    //   ),
+                    //   child: Text(
+                    //     "SUCCESS",
+                    //     style: Theme.of(context).textTheme.title.copyWith(
+                    //         fontSize: 10,
+                    //         color: Colors.white,
+                    //         fontWeight: FontWeight.bold),
+                    //   ),
+                    // )
+
                     Container(
-                      margin: EdgeInsets.only(bottom: 10),
-                      padding: EdgeInsets.all(5),
+                      padding: EdgeInsets.only(bottom: 10),
                       // color: Colors.lightGreen,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(50)),
-                        color: Colors.green,
-                      ),
                       child: Text(
-                        "SUCCESS",
-                        style: Theme.of(context).textTheme.title.copyWith(
-                            fontSize: 10,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
+                        statement == null
+                            ? "0"
+                            // : "${model.format(statement.rewardCost)}",
+                            : "${statement.rewardCost}",
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.subtitle.copyWith(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black87,
+                            ),
                       ),
                     )
                   ],
@@ -503,8 +520,6 @@ class BuildImageProfile extends StatelessWidget {
     );
   }
 }
-
-
 
 // I have a note to do for the app user;
 // - add customerNumber textbelow qr

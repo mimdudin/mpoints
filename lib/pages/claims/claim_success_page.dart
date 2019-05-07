@@ -5,7 +5,7 @@ import 'dart:ui' as ui;
 import 'dart:math' as Math;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:permission_handler/permission_handler.dart';
+// import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
@@ -24,14 +24,14 @@ class ClaimSuccessPage extends StatefulWidget {
 class _ClaimSuccessPageState extends State<ClaimSuccessPage> {
   static GlobalKey _globalKey = new GlobalKey();
 
-  @override
-  void initState() {
-    super.initState();
-    PermissionHandler().requestPermissions([PermissionGroup.storage]);
-    // PermissionHandler().requestPermissions(<PermissionGroup>[
-    //   PermissionGroup.storage, // 在这里添加需要的权限
-    // ]);
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   PermissionHandler().requestPermissions([PermissionGroup.storage]);
+  //   // PermissionHandler().requestPermissions(<PermissionGroup>[
+  //   //   PermissionGroup.storage, // 在这里添加需要的权限
+  //   // ]);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -164,17 +164,17 @@ class _ClaimSuccessPageState extends State<ClaimSuccessPage> {
         ));
   }
 
-  screenShot() async {
-    RenderRepaintBoundary boundary =
-        _globalKey.currentContext.findRenderObject();
-    ui.Image image = await boundary.toImage();
-    ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    final result = await ImageGallerySaver.save(byteData.buffer.asUint8List());
-    print(result);
-    // var filePath = await ImagePickerSaver.saveFile(
-    //     fileData: byteData.buffer.asUint8List());
-    // print(filePath);
-  }
+  // screenShot() async {
+  //   RenderRepaintBoundary boundary =
+  //       _globalKey.currentContext.findRenderObject();
+  //   ui.Image image = await boundary.toImage();
+  //   ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+  //   final result = await ImageGallerySaver.save(byteData.buffer.asUint8List());
+  //   print(result);
+  //   // var filePath = await ImagePickerSaver.saveFile(
+  //   //     fileData: byteData.buffer.asUint8List());
+  //   // print(filePath);
+  // }
 
   // takeScreenShot() async {
   //   int rand = new Math.Random().nextInt(10000);
